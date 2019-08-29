@@ -1,0 +1,9 @@
+{
+  "name": "@ibct/ecrx-wallet-sdk",
+  "version": "1.0.0",
+  "description": "JS SDK for Web and Mobile developers to integrate wallet services",
+  "main": "index.js",
+  "author": "nuwanwre",
+  "license": "MIT",
+  "private": true
+}
