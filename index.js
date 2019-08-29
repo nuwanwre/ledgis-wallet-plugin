@@ -1,3 +1,9 @@
-export default function helloWorld() {
-    return "Hello World!";
+export default class ecrx {
+    constructor(){
+        
+    }
+
+    helloWorld() {
+        return "Hello World!";
+    }
 }
