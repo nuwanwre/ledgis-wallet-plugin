@@ -5,5 +5,8 @@
   "main": "index.js",
   "author": "nuwanwre",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "uuid": "^3.3.3"
+  }
 }
