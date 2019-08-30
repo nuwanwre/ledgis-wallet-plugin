@@ -1,7 +1,5 @@
 import uuid from 'uuid';
 
-import { Actions, WalletConstants } from './constants';
-
 /**
  * @classdesc Represents the ECRX Wallet SDK. It allows the client applications to integrate with wallet functionalities
  * @class
@@ -70,8 +68,8 @@ export default class ecrx {
      * @param {String} request - JSON object containing the request that needs to be fulfilled
      */
     invokeWallet(request) {
-        const location = generateDeepLink(request);        
-        window.location(location);
+        const location = Utils.generateDeepLink(request);        
+        window.location = location;
     }
 }
 
@@ -80,6 +78,9 @@ export default class ecrx {
  * @class
  */
 class Utils {
+
+
+
     /**
      * Parses a request into a deep link
      * @constructor
@@ -87,7 +88,26 @@ class Utils {
      */
     static generateDeepLink(request) {
         if (request.action === Actions.WALLET_LOGIN) {
-            return `${WalletConstants.WALLET_NAME}://request?payload=${request.WALLET_LOGIN}`;
+            return `${WalletConstants.WALLET_NAME}://request?payload=${request.action}`;
         }
     }
 }
+
+/**-----------------------------
+ *       SDK CONSTANTS
+-------------------------------*/
+
+const UserAgent = {
+    USER_AGENT_IOS: 'ios',
+    USER_AGENT_ANDROID:'android',
+    USER_AGENT_DESKTOP_WEB: 'desktop-web',
+    USER_AGENT_MOBILE_WEB: 'mobile-web'
+};
+
+const WalletConstants = {
+    WALLET_NAME: 'sigprovider'
+};
+
+const Actions = {
+    WALLET_LOGIN: 'login'
+};
