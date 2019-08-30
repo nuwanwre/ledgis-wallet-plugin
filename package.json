@@ -2,17 +2,27 @@
   "name": "@ibct/ecrx-wallet-sdk",
   "version": "1.0.0",
   "description": "JS SDK for Web and Mobile developers to integrate wallet services",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
-    "build" : "gulp babel"
+    "build": "gulp babel",
+    "prepublish": "npm run build"
   },
   "author": "nuwanwre",
   "license": "MIT",
+  "files": [
+    "dist/index.js",
+    "dist/constants.js"
+  ],
   "private": true,
   "dependencies": {
     "uuid": "^3.3.3"
   },
   "devDependencies": {
-    "gulp": "^4.0.2"
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0"
   }
 }
