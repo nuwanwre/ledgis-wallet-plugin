@@ -52,9 +52,7 @@ export default class ecrx {
             action: Actions.WALLET_LOGIN
         }
 
-        return new Promise((resolve, reject) => {
-            
-        })
+        this.invokeWallet(request);
     }
 
     /**
