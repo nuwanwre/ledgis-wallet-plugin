@@ -3,10 +3,16 @@
   "version": "1.0.0",
   "description": "JS SDK for Web and Mobile developers to integrate wallet services",
   "main": "index.js",
+  "scripts": {
+    "build" : "gulp babel"
+  },
   "author": "nuwanwre",
   "license": "MIT",
   "private": true,
   "dependencies": {
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2"
   }
 }
