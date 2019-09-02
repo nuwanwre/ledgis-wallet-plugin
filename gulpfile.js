@@ -1,5 +1,6 @@
 const gulp = require('gulp');
 const babel = require('gulp-babel');
+const minify = require('gulp-babel-minify');
 const webpack = require('webpack');
 const path = require('path');
 
@@ -12,7 +13,13 @@ gulp.task('babel', () => {
         .pipe(babel({
             presets: ['@babel/preset-env'],
         }))
+        .pipe(minify({
+            mangle: {
+                keepClassName: true
+            }
+        }))
         .pipe(gulp.dest('dist'));
+    console.log("Transpiling complete!");
 });
 
 gulp.task('build',()  => {

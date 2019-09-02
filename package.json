@@ -26,6 +26,7 @@
     "babel-polyfill": "^6.26.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
+    "gulp-babel-minify": "^0.5.1",
     "json-loader": "^0.5.7",
     "path": "^0.12.7",
     "webpack": "^4.39.3"

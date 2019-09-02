@@ -48,7 +48,8 @@ export default class ecrx {
     getAccount() {
         const request = {
             payload: {
-                action: Actions.WALLET_LOGIN
+                action: Actions.WALLET_LOGIN,
+                callbackURL : this.webSocketURL
             },
             requestId: this.clientId,
         }
@@ -82,7 +83,7 @@ export default class ecrx {
      * @param {String} request - String detailing the request
      * @return {JSON} JSON object bearing the account information or an Error detailing the issue
      */
-    parseRequest(request) {
+    static parseRequest(request) {
         let regex = /[?&]([^=#]+)=([^&#]*)/g,
         params = {},
         match;
@@ -164,13 +165,6 @@ class Utils {
 /**-----------------------------
  *       SDK CONSTANTS
 -------------------------------*/
-
-const UserAgent = {
-    USER_AGENT_IOS: 'ios',
-    USER_AGENT_ANDROID:'android',
-    USER_AGENT_DESKTOP_WEB: 'desktop-web',
-    USER_AGENT_MOBILE_WEB: 'mobile-web'
-};
 
 const WalletConstants = {
     WALLET_NAME: 'sigprovider'
