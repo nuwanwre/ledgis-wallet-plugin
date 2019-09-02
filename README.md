@@ -11,20 +11,20 @@ This library utilizes the Authentication Protocol Specified by [EOSIO](https://g
 
 1. Use ```npm``` or ```yarn``` to install the package.
 
-    ```yarn add git+https://github.com/nuwanwre/ecrx-wallet-js-sdk.git```
+    `yarn add git+https://github.com/nuwanwre/ecrx-wallet-js-sdk.git`
 
-2. Import the package
-    ```import ecrx from 'import ecrx from '@ibct/ecrx-wallet-sdk';```
+2. Import the package.
+   
+    `import ecrx from 'import ecrx from '@ibct/ecrx-wallet-sdk';`
 
 3. Initialize the instance
-    ``` 
+    ``` js
     const options = {
         webSocketURL: 'ws://192.168.1.78:1337',
         callback: this.callback
     }
 
     const ecrxObj = new ecrx(options);
-
     ```
 
     * **webSocketURL**: URL of the webSocket that acts as the relay from ECRX wallet to your dApp/Web App.
@@ -33,7 +33,7 @@ This library utilizes the Authentication Protocol Specified by [EOSIO](https://g
 4. Invoking wallet on a certain action.
 
     **Authenticating and getting user account info**
-    ```
+    ```js
     // generate URL to invoke depending on the required action
     const location = ecrxObj.getAccount();
 
@@ -45,7 +45,7 @@ This library utilizes the Authentication Protocol Specified by [EOSIO](https://g
     ```
 
     Once the request has been fulfilled by ECRX wallet, the response will be passed on to the callback function.
-    ```
+    ```js
     const callback = (res) => {
         console.log(res.data);
         
