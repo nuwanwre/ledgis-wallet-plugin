@@ -89,6 +89,7 @@ function () {
   }, {
     key: "handleResponse",
     value: function handleResponse(response) {
+      alert(response);
       throw "Not implemented exception";
     }
     /**
