@@ -11,7 +11,6 @@ gulp.task('babel', () => {
     gulp.src('src/*.js')
         .pipe(babel({
             presets: ['@babel/preset-env'],
-            plugins: ['@babel/plugin-proposal-class-properties']
         }))
         .pipe(gulp.dest('dist'));
 });
@@ -35,8 +34,6 @@ gulp.task('build',()  => {
                     loader: 'babel-loader',
                     query: {
                         presets: ['@babel/preset-env'],
-                        plugins: ['@babel/plugin-proposal-class-properties']
-
                     }
                 },
                 {
