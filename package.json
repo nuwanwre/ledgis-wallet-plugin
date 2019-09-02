@@ -1,7 +1,7 @@
 {
   "name": "@ibct/ecrx-wallet-sdk",
   "version": "1.0.0",
-  "description": "JS SDK for Web and Mobile developers to integrate wallet services",
+  "description": "JS SDK for Web and Mobile developers to integrate ECRX wallet services",
   "main": "./dist/index.js",
   "scripts": {
     "build": "gulp babel",

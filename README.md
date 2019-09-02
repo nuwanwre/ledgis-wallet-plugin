@@ -7,6 +7,9 @@ This library utilizes the Authentication Protocol Specified by [EOSIO](https://g
 ![Sequence Diagram](https://i.imgur.com/YDT4C0T.png)
 
 
+>A simple Websocket Relay that serves the purpose of the Callback server can be found [here](https://github.com/nuwanwre/simple-ws-relay)
+
+
 ## dApp/Web App Integration Guide
 
 This section shows how to authenticate and sign transactions using ECRX Wallet through dApp or Web App.
