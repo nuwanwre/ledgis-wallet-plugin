@@ -63,6 +63,7 @@ export default class ecrx {
      * a JSON object bearing the account information or an Error detailing the issue
      */
     handleResponse(response) {
+        alert(response);
         throw "Not implemented exception";
     }
 
