@@ -1,5 +1,4 @@
 import uuid from 'uuid';
-import { Linking } from 'react-native';
 
 /**
  * @classdesc Represents the ECRX Wallet SDK. It allows the client applications to integrate with wallet functionalities
@@ -14,7 +13,6 @@ export default class ecrx {
     constructor(options) {
         this.callbackURL = options.callbackURL;
         this.clientId = uuid.v4();
-        this.setUserAgent();
         this.connectWebSocket();
     }
 
@@ -69,7 +67,7 @@ export default class ecrx {
             action: Actions.WALLET_LOGIN
         }
 
-        this.invokeWallet(request);
+        return Utils.generateDeepLink(request);
     }
 
     /**
@@ -87,21 +85,7 @@ export default class ecrx {
      * @param {String} request - JSON object containing the request that needs to be fulfilled
      */
     invokeWallet(request) {
-        const location = Utils.generateDeepLink(request);
-        
-        switch (this.userAgent) {
-            case UserAgent.USER_AGENT_IOS:
-            case UserAgent.USER_AGENT_ANDROID:
-                Linking.openURL(location);
-                break;
-            case UserAgent.USER_AGENT_MOBILE_WEB:
-                window.location = location;
-                break;
-            default:
-                throw 'Client not supported';
-            
-        }
-        window.location = location;
+        return Utils.generateDeepLink(request);
     }
 }
 

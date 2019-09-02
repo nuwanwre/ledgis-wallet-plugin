@@ -2,7 +2,7 @@
   "name": "@ibct/ecrx-wallet-sdk",
   "version": "1.0.0",
   "description": "JS SDK for Web and Mobile developers to integrate wallet services",
-  "main": "./dist/ecrx-wallet-sdk.js",
+  "main": "./dist/index.js",
   "scripts": {
     "build": "gulp babel",
     "prepublish": "npm run build"
@@ -14,8 +14,6 @@
   ],
   "private": true,
   "dependencies": {
-    "react": "^16.8.6",
-    "react-native": "^0.60.5",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
