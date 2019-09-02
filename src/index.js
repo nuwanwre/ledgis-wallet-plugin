@@ -11,16 +11,16 @@ export default class ecrx {
      * @param {String} options.callbackURL - Callback URL once the request has been fulfilled
      */
     constructor(options) {
-        this.callbackURL = options.callbackURL;
+        this.webSocketURL = options.webSocketURL;
         this.clientId = uuid.v4();
-        this.connectWebSocket();
+        this.connectWebSocket(options.callback);
     }
 
     /**
      * Connects to websocket and binds with associated events
      */
-    connectWebSocket() {
-        this.webSocket = new WebSocket(`${this.callbackURL}/?id=${this.clientId}`);
+    connectWebSocket(callback) {
+        this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
     
         // Attach event listeners
         this.webSocket.onopen = () => {
@@ -36,7 +36,7 @@ export default class ecrx {
         }
     
         this.webSocket.onmessage = (e) => {
-            handleResponse(e);
+            callback(e);
         }
     }
 

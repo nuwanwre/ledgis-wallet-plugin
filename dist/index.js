@@ -30,9 +30,9 @@ function () {
   function ecrx(options) {
     _classCallCheck(this, ecrx);
 
-    this.callbackURL = options.callbackURL;
+    this.webSocketURL = options.webSocketURL;
     this.clientId = _uuid["default"].v4();
-    this.connectWebSocket();
+    this.connectWebSocket(options.callback);
   }
   /**
    * Connects to websocket and binds with associated events
@@ -41,10 +41,10 @@ function () {
 
   _createClass(ecrx, [{
     key: "connectWebSocket",
-    value: function connectWebSocket() {
+    value: function connectWebSocket(callback) {
       var _this = this;
 
-      this.webSocket = new WebSocket("".concat(this.callbackURL, "/?id=").concat(this.clientId)); // Attach event listeners
+      this.webSocket = new WebSocket("".concat(this.webSocketURL, "/?id=").concat(this.clientId)); // Attach event listeners
 
       this.webSocket.onopen = function () {
         _this.connected = true;
@@ -59,7 +59,7 @@ function () {
       };
 
       this.webSocket.onmessage = function (e) {
-        handleResponse(e);
+        callback(e);
       };
     }
     /**
