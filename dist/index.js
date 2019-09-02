@@ -35,31 +35,11 @@ function () {
     this.connectWebSocket();
   }
   /**
-   * Sets user agent type to handle outgoing links
-   * @param {String} userAgent - Type of useragent that the SDK is being invoked from
+   * Connects to websocket and binds with associated events
    */
 
 
   _createClass(ecrx, [{
-    key: "setUserAgent",
-    value: function setUserAgent(userAgent) {
-      switch (userAgent.toLowerCase) {
-        case UserAgent.USER_AGENT_IOS:
-        case UserAgent.USER_AGENT_ANDROID:
-        case UserAgent.USER_AGENT_DESKTOP_WEB:
-        case UserAgent.USER_AGENT_MOBILE_WEB:
-          this.userAgent = userAgent.toLowerCase();
-          break;
-
-        default:
-          throw "Client not supported";
-      }
-    }
-    /**
-     * Connects to websocket and binds with associated events
-     */
-
-  }, {
     key: "connectWebSocket",
     value: function connectWebSocket() {
       var _this = this;
@@ -92,7 +72,10 @@ function () {
     key: "getAccount",
     value: function getAccount() {
       var request = {
-        action: Actions.WALLET_LOGIN
+        payload: {
+          action: Actions.WALLET_LOGIN
+        },
+        requestId: this.clientId
       };
       return Utils.generateDeepLink(request);
     }
@@ -109,8 +92,25 @@ function () {
       throw "Not implemented exception";
     }
     /**
+     * Handle incoming requests connecting apps and parse to JSON
+     * @param {String} request - String detailing the request
+     * @return {JSON} JSON object bearing the account information or an Error detailing the issue
+     */
+
+  }, {
+    key: "parseRequest",
+    value: function parseRequest(request) {
+      var regex = /[?&]([^=#]+)=([^&#]*)/g,
+          params = {},
+          match;
+
+      while (match = regex.exec(url)) {
+        params[match[1]] = match[2];
+      }
+    }
+    /**
      * Invoke ECRX Wallet
-     * @param {String} request - JSON object containing the request that needs to be fulfilled
+     * @param {JSON} request - JSON object containing the request that needs to be fulfilled
      */
 
   }, {
@@ -142,13 +142,34 @@ function () {
 
     /**
      * Parses a request into a deep link
-     * @constructor
-     * @param {String} request.body - A JSON object containing the actionab
+     * @param {String} request.body - A JSON object containing the action
+     * @return {JSON} Deep link containg the request to the app
      */
     value: function generateDeepLink(request) {
-      if (request.action === Actions.WALLET_LOGIN) {
-        return "".concat(WalletConstants.WALLET_NAME, "://request?payload=").concat(request.action);
+      var encoded = Utils.hexEncode(JSON.stringify(request.payload));
+
+      if (request.payload.action === Actions.WALLET_LOGIN) {
+        return "".concat(WalletConstants.WALLET_NAME, "://request?payload=").concat(encoded, "&requestId=").concat(request.requestId);
       }
+    }
+    /**
+     * Parses a given string to hex
+     * @param {String} payload - A JSON object containing the payload
+     * @return {String} Encoded hex string containing the payload
+     */
+
+  }, {
+    key: "hexEncode",
+    value: function hexEncode(payload) {
+      var hex, i;
+      var result = "";
+
+      for (i = 0; i < payload.length; i++) {
+        hex = payload.charCodeAt(i).toString(16);
+        result += ("000" + hex).slice(-4);
+      }
+
+      return result;
     }
   }]);
 

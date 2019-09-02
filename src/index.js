@@ -17,23 +17,6 @@ export default class ecrx {
     }
 
     /**
-     * Sets user agent type to handle outgoing links
-     * @param {String} userAgent - Type of useragent that the SDK is being invoked from
-     */
-    setUserAgent(userAgent) {
-        switch(userAgent.toLowerCase) {
-            case UserAgent.USER_AGENT_IOS:
-            case UserAgent.USER_AGENT_ANDROID:
-            case UserAgent.USER_AGENT_DESKTOP_WEB:
-            case UserAgent.USER_AGENT_MOBILE_WEB:
-                this.userAgent = userAgent.toLowerCase();
-                break;
-            default:
-                throw "Client not supported";
-        }
-    }
-    
-    /**
      * Connects to websocket and binds with associated events
      */
     connectWebSocket() {
@@ -64,7 +47,10 @@ export default class ecrx {
      */
     getAccount() {
         const request = {
-            action: Actions.WALLET_LOGIN
+            payload: {
+                action: Actions.WALLET_LOGIN
+            },
+            requestId: this.clientId,
         }
 
         return Utils.generateDeepLink(request);
@@ -81,8 +67,22 @@ export default class ecrx {
     }
 
     /**
+     * Handle incoming requests connecting apps and parse to JSON
+     * @param {String} request - String detailing the request
+     * @return {JSON} JSON object bearing the account information or an Error detailing the issue
+     */
+    parseRequest(request) {
+        let regex = /[?&]([^=#]+)=([^&#]*)/g,
+        params = {},
+        match;
+        while ((match = regex.exec(url))) {
+            params[match[1]] = match[2];
+        }
+    }
+
+    /**
      * Invoke ECRX Wallet
-     * @param {String} request - JSON object containing the request that needs to be fulfilled
+     * @param {JSON} request - JSON object containing the request that needs to be fulfilled
      */
     invokeWallet(request) {
         return Utils.generateDeepLink(request);
@@ -96,13 +96,32 @@ export default class ecrx {
 class Utils {
     /**
      * Parses a request into a deep link
-     * @constructor
-     * @param {String} request.body - A JSON object containing the actionab
+     * @param {String} request.body - A JSON object containing the action
+     * @return {JSON} Deep link containg the request to the app
      */
     static generateDeepLink(request) {
-        if (request.action === Actions.WALLET_LOGIN) {
-            return `${WalletConstants.WALLET_NAME}://request?payload=${request.action}`;
+        let encoded = Utils.hexEncode(JSON.stringify(request.payload));
+
+        if (request.payload.action === Actions.WALLET_LOGIN) {
+            return `${WalletConstants.WALLET_NAME}://request?payload=${encoded}&requestId=${request.requestId}`;
         }
+    }
+
+    /**
+     * Parses a given string to hex
+     * @param {String} payload - A JSON object containing the payload
+     * @return {String} Encoded hex string containing the payload
+     */
+    static hexEncode(payload) {
+        let hex, i;
+    
+        let result = "";
+        for (i=0; i<payload.length; i++) {
+            hex = payload.charCodeAt(i).toString(16);
+            result += ("000"+hex).slice(-4);
+        }
+    
+        return result
     }
 }
 
