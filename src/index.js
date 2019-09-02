@@ -68,6 +68,16 @@ export default class ecrx {
     }
 
     /**
+     * Send response back to calling application
+     * @param {String} response - Contains the response relayed throught the callback server
+     * @return {Promise} Account - Returns a promise that, when fulfilled, will either return 
+     * a JSON object bearing the account information or an Error detailing the issue
+     */
+    sendResponse(response) {
+        this.webSocket.send(response);
+    }
+
+    /**
      * Handle incoming requests connecting apps and parse to JSON
      * @param {String} request - String detailing the request
      * @return {JSON} JSON object bearing the account information or an Error detailing the issue
