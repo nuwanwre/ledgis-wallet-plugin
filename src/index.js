@@ -75,9 +75,19 @@ export default class ecrx {
         let regex = /[?&]([^=#]+)=([^&#]*)/g,
         params = {},
         match;
-        while ((match = regex.exec(url))) {
+
+        while ((match = regex.exec(request))) {
             params[match[1]] = match[2];
         }
+
+        const payload = Utils.hexDecode(params.payload);
+
+        const response = {
+            payload: payload,
+            requestId: params.requestId
+        } 
+
+        return response;
     }
 
     /**
@@ -114,7 +124,6 @@ class Utils {
      */
     static hexEncode(payload) {
         let hex, i;
-    
         let result = "";
         for (i=0; i<payload.length; i++) {
             hex = payload.charCodeAt(i).toString(16);
@@ -122,6 +131,22 @@ class Utils {
         }
     
         return result
+    }
+
+    /**
+     * Parses a given hex to string
+     * @param {String} payload - Hex encoded string containing the payload
+     * @return {JSON} JSON payload
+     */
+    static hexDecode(payload) {
+        let j;
+        let hexes = payload.match(/.{1,4}/g) || [];
+        let result = "";
+        for(j = 0; j<hexes.length; j++) {
+            result += String.fromCharCode(parseInt(hexes[j], 16));
+        }
+
+        return JSON.parse(result);
     }
 }
 

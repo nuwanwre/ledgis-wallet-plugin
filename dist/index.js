@@ -104,9 +104,16 @@ function () {
           params = {},
           match;
 
-      while (match = regex.exec(url)) {
+      while (match = regex.exec(request)) {
         params[match[1]] = match[2];
       }
+
+      var payload = Utils.hexDecode(params.payload);
+      var response = {
+        payload: payload,
+        requestId: params.requestId
+      };
+      return response;
     }
     /**
      * Invoke ECRX Wallet
@@ -170,6 +177,25 @@ function () {
       }
 
       return result;
+    }
+    /**
+     * Parses a given hex to string
+     * @param {String} payload - Hex encoded string containing the payload
+     * @return {JSON} JSON payload
+     */
+
+  }, {
+    key: "hexDecode",
+    value: function hexDecode(payload) {
+      var j;
+      var hexes = payload.match(/.{1,4}/g) || [];
+      var result = "";
+
+      for (j = 0; j < hexes.length; j++) {
+        result += String.fromCharCode(parseInt(hexes[j], 16));
+      }
+
+      return JSON.parse(result);
     }
   }]);
 
