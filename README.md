@@ -32,7 +32,7 @@ This section shows how to authenticate and sign transactions using ECRX Wallet t
     const ecrxObj = new ecrx(options);
     ```
 
-    * **webSocketURL**: URL of the webSocket that acts as the relay from ECRX wallet to your dApp/Web App.
+    * **webSocketURL**: URL of the webSocket that acts as the relay from ECRX wallet to your dApp/Web App. Secured **wss** ports are recommended.
     * **callback**: A callback function that is essential on your dApp/Web App that will listen to incoming messages via the websocket. You need to implement this.
 
 4. Invoking wallet on a certain action.

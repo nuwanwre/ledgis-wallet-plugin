@@ -1,4 +1,5 @@
 import uuid from 'uuid';
+import { runInThisContext } from 'vm';
 
 /**
  * @classdesc Represents the ECRX Wallet SDK. It allows the client applications to integrate with wallet functionalities
@@ -8,11 +9,13 @@ export default class ecrx {
     /**
      * Create an ecrx object
      * @constructor
-     * @param {String} options.callbackURL - Callback URL once the request has been fulfilled
+     * @param {String} options.webSocketURL - webSocket URL once the request has been fulfilled
+     * @param {String} options.callback - Callback function that listens to incoming websocket data
      */
     constructor(options) {
         this.webSocketURL = options.webSocketURL;
         this.clientId = uuid.v4();
+        this.callback = options.callback;
         this.connectWebSocket(options.callback);
     }
 
@@ -32,7 +35,7 @@ export default class ecrx {
         }
     
         this.webSocket.onerror = (e) => {
-            console.error("ERR ecrx: ", e);
+            this.webSocket.close();
         }
     
         this.webSocket.onmessage = (e) => {
