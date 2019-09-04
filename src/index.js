@@ -45,19 +45,36 @@ export default class ecrx {
 
     /**
      * Request account from ECRX Wallet
-     * @return {Promise} Account - Returns a promise that, when fulfilled, will either return 
-     * a JSON object bearing the account information or an Error detailing the issue
+     * @return {URL} - A deep link URL to invoke the wallet
      */
     getAccount() {
         const request = {
             payload: {
                 action: Actions.WALLET_LOGIN,
-                callbackURL : this.webSocketURL
+                callbackURL: this.webSocketURL
             },
             requestId: this.clientId,
-        }
+        };
 
         return Utils.generateDeepLink(request);
+    }
+
+    /**
+     * Request transaction authirization from ECRX Wallet
+     * @param {JSON} request - A JSON object with all the data required to request a transaction 
+     * @return {URL} - A deep link URL to invoke the wallet
+     */
+    authorizeTransaction(request) {
+        const sendRequest = {
+            payload: {
+                action: Actions.WALLET_TRANSACTION,
+                callbackURL: this.webSocketURL,
+                request: request
+            },
+            requestId: this.clientId
+        };
+
+        return Utils.generateDeepLink(sendRequest);
     }
 
     /**
@@ -174,5 +191,6 @@ const WalletConstants = {
 };
 
 const Actions = {
-    WALLET_LOGIN: 'login'
+    WALLET_LOGIN: 'login',
+    WALLET_TRANSACTION: 'transaction'
 };

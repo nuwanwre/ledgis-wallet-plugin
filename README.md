@@ -2,7 +2,7 @@
 
 This library is meant to be used together with applications that are planning to integrate ECRX Mobile wallet into their respective applications. Target release platforms are JS based Web Apps and Hybrid mobile frameworks such as React Native to seamlessly integrate wallet functions.
 
-This library utilizes the Authentication Protocol Specified by [EOSIO](https://github.com/EOSIO/eosio-authentication-transport-protocol-spec). According this specification, three major components are involved when authenticating, or signing transactions.
+This library utilizes the [Authentication Protocol](https://github.com/EOSIO/eosio-authentication-transport-protocol-spec) Specified by EOSIO. According this specification, three major components are involved when authenticating, or signing transactions.
 
 ![Sequence Diagram](https://i.imgur.com/YDT4C0T.png)
 
