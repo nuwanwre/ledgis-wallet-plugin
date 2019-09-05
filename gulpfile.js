@@ -31,7 +31,7 @@ gulp.task('build',()  => {
         output: {
             path: path.join(__dirname, 'dist/'),
             filename: 'index.js',
-            library: 'ecrx'
+            library: 'LEDGIS'
         },
         module: {
             rules: [

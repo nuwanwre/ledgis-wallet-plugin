@@ -1,11 +1,12 @@
 {
-  "name": "@ibct/ecrx-wallet-sdk",
+  "name": "@ibct/ledgis-wallet-plugin",
   "version": "1.0.0",
-  "description": "JS SDK for Web and Mobile developers to integrate ECRX wallet services",
+  "description": "JS Plugin for Web and Mobile developers to integrate LEDGIS wallet services",
   "main": "./dist/index.js",
   "scripts": {
     "build": "gulp babel",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "test": "jest --verbose ./tests"
   },
   "author": "nuwanwre",
   "license": "MIT",
@@ -27,7 +28,10 @@
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-babel-minify": "^0.5.1",
+    "jest": "^24.9.0",
+    "jest-websocket-mock": "^1.5.0",
     "json-loader": "^0.5.7",
+    "mock-socket": "^9.0.0",
     "path": "^0.12.7",
     "webpack": "^4.39.3"
   }

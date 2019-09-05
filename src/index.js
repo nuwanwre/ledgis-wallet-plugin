@@ -1,11 +1,10 @@
 import uuid from 'uuid';
-import { runInThisContext } from 'vm';
 
 /**
- * @classdesc Represents the ECRX Wallet SDK. It allows the client applications to integrate with wallet functionalities
+ * @classdesc Represents the LEDGIS Wallet SDK. It allows the client applications to integrate with wallet functionalities
  * @class
  */
-export default class ecrx {
+export default class ledgis {
     /**
      * Create an ecrx object
      * @constructor
@@ -16,6 +15,7 @@ export default class ecrx {
         this.webSocketURL = options.webSocketURL;
         this.clientId = uuid.v4();
         this.callback = options.callback;
+        this.connected = false;
         this.connectWebSocket(options.callback);
     }
 
@@ -35,6 +35,7 @@ export default class ecrx {
         }
     
         this.webSocket.onerror = (e) => {
+            this.connected = false;
             this.webSocket.close();
         }
     
@@ -44,7 +45,23 @@ export default class ecrx {
     }
 
     /**
-     * Request account from ECRX Wallet
+     * Gets the clientId associated with this instance
+     * @returns {UUID} A unique id associcated with this instance
+     */
+    getClientId() {
+        return this.clientId;
+    }
+
+    /**
+     * Gets if current instance is connected to the websocket
+     * @returns {boolean} connection status
+     */
+    getIsConnected() {
+        return this.connected;
+    }
+
+    /**
+     * Request account from LEDGIS Wallet
      * @return {URL} - A deep link URL to invoke the wallet
      */
     getAccount() {
@@ -60,7 +77,7 @@ export default class ecrx {
     }
 
     /**
-     * Request transaction authirization from ECRX Wallet
+     * Request transaction authorization from LEDGIS Wallet
      * @param {JSON} request - A JSON object with all the data required to request a transaction 
      * @return {URL} - A deep link URL to invoke the wallet
      */
@@ -123,7 +140,7 @@ export default class ecrx {
     }
 
     /**
-     * Invoke ECRX Wallet
+     * Invoke LEDGIS Wallet
      * @param {JSON} request - JSON object containing the request that needs to be fulfilled
      */
     invokeWallet(request) {

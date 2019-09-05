@@ -1,6 +1,6 @@
-# ECRX Wallet Library for JS based Applications
+# LEDGIS Wallet Plugin for JS based Applications
 
-This library is meant to be used together with applications that are planning to integrate ECRX Mobile wallet into their respective applications. Target release platforms are JS based Web Apps and Hybrid mobile frameworks such as React Native to seamlessly integrate wallet functions.
+This library is meant to be used together with applications that are planning to integrate LEDGIS Mobile wallet into their respective applications. Target release platforms are JS based Web Apps and Hybrid mobile frameworks such as React Native to seamlessly integrate wallet functions.
 
 This library utilizes the [Authentication Protocol](https://github.com/EOSIO/eosio-authentication-transport-protocol-spec) Specified by EOSIO. According this specification, three major components are involved when authenticating, or signing transactions.
 
@@ -10,9 +10,9 @@ This library utilizes the [Authentication Protocol](https://github.com/EOSIO/eos
 >A simple Websocket Relay that serves the purpose of the Callback server can be found [here](https://github.com/nuwanwre/simple-ws-relay)
 
 
-## dApp/Web App Integration Guide
+## Integration Guide for Web Apps and dApps
 
-This section shows how to authenticate and sign transactions using ECRX Wallet through dApp or Web App.
+This section shows how to authenticate and sign transactions using LEDGIS Wallet through dApp or Web App.
 
 1. Use ```npm``` or ```yarn``` to install the package.
 
@@ -32,7 +32,7 @@ This section shows how to authenticate and sign transactions using ECRX Wallet t
     const ecrxObj = new ecrx(options);
     ```
 
-    * **webSocketURL**: URL of the webSocket that acts as the relay from ECRX wallet to your dApp/Web App. Secured **wss** ports are recommended.
+    * **webSocketURL**: URL of the webSocket that acts as the relay from LEDGIS wallet to your dApp/Web App. Secured **wss** ports are recommended.
     * **callback**: A callback function that is essential on your dApp/Web App that will listen to incoming messages via the websocket. You need to implement this.
 
 4. Invoking wallet on a certain action.
@@ -49,7 +49,7 @@ This section shows how to authenticate and sign transactions using ECRX Wallet t
     Linking.openURL(location);
     ```
 
-    Once the request has been fulfilled by ECRX wallet, the response will be passed on to the callback function.
+    Once the request has been fulfilled by LEDGIS wallet, the response will be passed on to the callback function.
     ```js
     const callback = (res) => {
         console.log(res.data);
@@ -58,9 +58,9 @@ This section shows how to authenticate and sign transactions using ECRX Wallet t
     }
     ```
 
-## ECRX Wallet Integration Guide
+## Integration Guide for LEDGIS Wallet
 
-This section is for ECRX Wallet developers to integrate communication protocols to authenticate transactions, allowing full-duplex communication between dApps/Web Apps and ECRX Wallet.
+This section is for LEDGIS Wallet developers to integrate communication protocols to authenticate transactions, allowing full-duplex communication between dApps/Web Apps and LEDGIS Wallet.
 
 1. Use ```npm``` or ```yarn``` to install the package.
 
@@ -84,7 +84,7 @@ This section is for ECRX Wallet developers to integrate communication protocols 
     const ecrxObj = new ecrx(options);
     ```
 
-    * **webSocketURL**: URL of the webSocket that acts as the relay from ECRX wallet to relevant dApp/Web App.
+    * **webSocketURL**: URL of the webSocket that acts as the relay from LEDGIS wallet to relevant dApp/Web App.
 
 4. Completing a request
     ```js
