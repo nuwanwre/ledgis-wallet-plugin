@@ -62,13 +62,14 @@ export default class ledgis {
 
     /**
      * Request account from LEDGIS Wallet
+     * @param {JSON} request - A JSON object detailing the connecting app and relevant data
      * @return {URL} - A deep link URL to invoke the wallet
      */
     getAccount() {
         const request = {
             payload: {
                 action: Actions.WALLET_LOGIN,
-                callbackURL: this.webSocketURL
+                callbackURL: this.webSocketURL,
             },
             requestId: this.clientId,
         };

@@ -29,11 +29,17 @@ This section shows how to authenticate and sign transactions using LEDGIS Wallet
         callback: this.callback
     }
 
-    const ecrxObj = new ecrx(options);
+    const ledgisObj = new ecrx(options);
+
+    window.ledgis = ledgisObj;
     ```
 
     * **webSocketURL**: URL of the webSocket that acts as the relay from LEDGIS wallet to your dApp/Web App. Secured **wss** ports are recommended.
     * **callback**: A callback function that is essential on your dApp/Web App that will listen to incoming messages via the websocket. You need to implement this.
+
+    It's strongly recommend that you keep the created plugin object in a global scope to avoid making a new websocket connection with each request. 
+
+    For subsequent requests, simply use `window.ledgis` object.
 
 4. Invoking wallet on a certain action.
 
