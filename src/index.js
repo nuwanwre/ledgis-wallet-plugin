@@ -112,7 +112,12 @@ export default class ledgis {
      * a JSON object bearing the account information or an Error detailing the issue
      */
     sendResponse(response) {
-        this.webSocket.send(response);
+        if (this.connected)
+            this.webSocket.send(response);
+        else {
+            this.connectWebSocket(this.callback);
+            this.webSocket.send(response);
+        }
     }
 
     /**
@@ -204,7 +209,7 @@ class Utils {
 -------------------------------*/
 
 const WalletConstants = {
-    WALLET_NAME: 'sigprovider'
+    WALLET_NAME: 'ledgis'
 };
 
 const Actions = {
