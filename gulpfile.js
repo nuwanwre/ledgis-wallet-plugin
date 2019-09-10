@@ -13,11 +13,6 @@ gulp.task('babel', () => {
         .pipe(babel({
             presets: ['@babel/preset-env'],
         }))
-        .pipe(minify({
-            mangle: {
-                keepClassName: true
-            }
-        }))
         .pipe(gulp.dest('dist'));
     console.log("Transpiling complete!");
 });
