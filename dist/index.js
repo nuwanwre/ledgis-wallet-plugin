@@ -27,6 +27,7 @@ function () {
    * @constructor
    * @param {String} options.webSocketURL - webSocket URL once the request has been fulfilled
    * @param {String} options.callback - Callback function that listens to incoming websocket data
+   * @param {String} options.fallbackURL - URL to fallback once the request has been fulfilled/rejected
    */
   function ledgis(options) {
     _classCallCheck(this, ledgis);
@@ -89,6 +90,7 @@ function () {
     }
     /**
      * Request account from LEDGIS Wallet
+     * @param {JSON} request - A JSON object detailing the connecting app and relevant data
      * @return {URL} - A deep link URL to invoke the wallet
      */
 
@@ -124,19 +126,6 @@ function () {
       return Utils.generateDeepLink(sendRequest);
     }
     /**
-     * Handle incoming responses from the websocket
-     * @param {String} response - Contains the response relayed throught the callback server
-     * @return {Promise} Account - Returns a promise that, when fulfilled, will either return 
-     * a JSON object bearing the account information or an Error detailing the issue
-     */
-
-  }, {
-    key: "handleResponse",
-    value: function handleResponse(response) {
-      alert(response);
-      throw "Not implemented exception";
-    }
-    /**
      * Send response back to calling application
      * @param {String} response - Contains the response relayed throught the callback server
      * @return {Promise} Account - Returns a promise that, when fulfilled, will either return 
@@ -146,10 +135,18 @@ function () {
   }, {
     key: "sendResponse",
     value: function sendResponse(response) {
-      if (this.connected) this.webSocket.send(response);else {
-        this.connectWebSocket(this.callback);
-        this.webSocket.send(response);
-      }
+      var _this2 = this;
+
+      if (!this.connected) this.connectWebSocket(this.callback);
+      return new Promise(function (resolve, reject) {
+        try {
+          _this2.webSocket.send(response);
+
+          resolve(true);
+        } catch (e) {
+          reject(e);
+        }
+      });
     }
     /**
      * Handle incoming requests connecting apps and parse to JSON
@@ -157,16 +154,6 @@ function () {
      * @return {JSON} JSON object bearing the account information or an Error detailing the issue
      */
 
-  }, {
-    key: "invokeWallet",
-
-    /**
-     * Invoke LEDGIS Wallet
-     * @param {JSON} request - JSON object containing the request that needs to be fulfilled
-     */
-    value: function invokeWallet(request) {
-      return Utils.generateDeepLink(request);
-    }
   }], [{
     key: "parseRequest",
     value: function parseRequest(request) {
