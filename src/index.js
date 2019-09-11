@@ -10,6 +10,7 @@ export default class ledgis {
      * @constructor
      * @param {String} options.webSocketURL - webSocket URL once the request has been fulfilled
      * @param {String} options.callback - Callback function that listens to incoming websocket data
+     * @param {String} options.fallbackURL - URL to fallback once the request has been fulfilled/rejected
      */
     constructor(options) {
         this.webSocketURL = options.webSocketURL;
@@ -96,29 +97,24 @@ export default class ledgis {
     }
 
     /**
-     * Handle incoming responses from the websocket
-     * @param {String} response - Contains the response relayed throught the callback server
-     * @return {Promise} Account - Returns a promise that, when fulfilled, will either return 
-     * a JSON object bearing the account information or an Error detailing the issue
-     */
-    handleResponse(response) {
-        alert(response);
-        throw "Not implemented exception";
-    }
-
-    /**
      * Send response back to calling application
      * @param {String} response - Contains the response relayed throught the callback server
      * @return {Promise} Account - Returns a promise that, when fulfilled, will either return 
      * a JSON object bearing the account information or an Error detailing the issue
      */
     sendResponse(response) {
-        if (this.connected)
-            this.webSocket.send(response);
-        else {
+        if (!this.connected)
             this.connectWebSocket(this.callback);
-            this.webSocket.send(response);
-        }
+
+        return new Promise((resolve, reject) => {
+            try {
+                this.webSocket.send(response);
+                resolve(true);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
     }
 
     /**
@@ -143,14 +139,6 @@ export default class ledgis {
         } 
 
         return response;
-    }
-
-    /**
-     * Invoke LEDGIS Wallet
-     * @param {JSON} request - JSON object containing the request that needs to be fulfilled
-     */
-    invokeWallet(request) {
-        return Utils.generateDeepLink(request);
     }
 }
 
