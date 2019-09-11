@@ -35,6 +35,7 @@ function () {
     this.webSocketURL = options.webSocketURL;
     this.clientId = _uuid["default"].v4();
     this.callback = options.callback;
+    this.fallbackURL = options.fallbackURL;
     this.connected = false;
     this.connectWebSocket(options.callback);
   }
@@ -100,7 +101,8 @@ function () {
       var request = {
         payload: {
           action: Actions.WALLET_LOGIN,
-          callbackURL: this.webSocketURL
+          callbackURL: this.webSocketURL,
+          fallbackURL: this.fallbackURL
         },
         requestId: this.clientId
       };
@@ -119,6 +121,7 @@ function () {
         payload: {
           action: Actions.WALLET_TRANSACTION,
           callbackURL: this.webSocketURL,
+          fallbackURL: this.fallbackURL,
           request: request
         },
         requestId: this.clientId

@@ -16,6 +16,7 @@ export default class ledgis {
         this.webSocketURL = options.webSocketURL;
         this.clientId = uuid.v4();
         this.callback = options.callback;
+        this.fallbackURL = options.fallbackURL;
         this.connected = false;
         this.connectWebSocket(options.callback);
     }
@@ -71,6 +72,7 @@ export default class ledgis {
             payload: {
                 action: Actions.WALLET_LOGIN,
                 callbackURL: this.webSocketURL,
+                fallbackURL: this.fallbackURL,
             },
             requestId: this.clientId,
         };
@@ -88,6 +90,7 @@ export default class ledgis {
             payload: {
                 action: Actions.WALLET_TRANSACTION,
                 callbackURL: this.webSocketURL,
+                fallbackURL: this.fallbackURL,
                 request: request
             },
             requestId: this.clientId
