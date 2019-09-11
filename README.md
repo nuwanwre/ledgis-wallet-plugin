@@ -26,7 +26,8 @@ This section shows how to authenticate and sign transactions using LEDGIS Wallet
     ``` js
     const options = {
         webSocketURL: 'ws://192.168.1.78:1337',
-        callback: this.callback
+        callback: this.callback,
+        fallbackURL: 'https://dapp.io/fallback'
     }
 
     const ledgisObj = new ecrx(options);
@@ -36,6 +37,18 @@ This section shows how to authenticate and sign transactions using LEDGIS Wallet
 
     * **webSocketURL**: URL of the webSocket that acts as the relay from LEDGIS wallet to your dApp/Web App. Secured **wss** ports are recommended.
     * **callback**: A callback function that is essential on your dApp/Web App that will listen to incoming messages via the websocket. You need to implement this.
+    * **fallbackURL**: A fallback URL to return from LEDGIS Wallet from once the request has been fulfilled or rejected.
+    
+        Depending on the application and the platform, the fallbackURL may differ.
+
+        | Client - Platform          | fallbackURL                            |
+        |----------------------------|:--------------------------------------:|
+        | Safari - iOS               | `http://dapp.io/fallback`              |
+        | Chrome - iOS               | `googlechrome://dapp.io/fallback`      |
+        |                            | `googlechromes://dapp.io/fallback`     |
+        | Firefox - iOS, Android     | `firefox://open-url?url=http://dapp.io`|
+
+        Calling applications should provide correct URI schemes depending on the client platform.
 
     It's strongly recommend that you keep the created plugin object in a global scope to avoid making a new websocket connection with each request. 
 
