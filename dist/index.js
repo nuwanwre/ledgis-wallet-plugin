@@ -207,10 +207,7 @@ function () {
      */
     value: function generateDeepLink(request) {
       var encoded = Utils.hexEncode(JSON.stringify(request.payload));
-
-      if (request.payload.action === Actions.WALLET_LOGIN) {
-        return "".concat(WalletConstants.WALLET_NAME, "://request?payload=").concat(encoded, "&requestId=").concat(request.requestId);
-      }
+      return "".concat(WalletConstants.WALLET_NAME, "://request?payload=").concat(encoded, "&requestId=").concat(request.requestId);
     }
     /**
      * Parses a given string to hex

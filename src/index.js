@@ -160,9 +160,7 @@ class Utils {
     static generateDeepLink(request) {
         let encoded = Utils.hexEncode(JSON.stringify(request.payload));
 
-        if (request.payload.action === Actions.WALLET_LOGIN) {
-            return `${WalletConstants.WALLET_NAME}://request?payload=${encoded}&requestId=${request.requestId}`;
-        }
+        return `${WalletConstants.WALLET_NAME}://request?payload=${encoded}&requestId=${request.requestId}`;
     }
 
     /**
