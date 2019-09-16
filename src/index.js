@@ -64,7 +64,6 @@ export default class ledgis {
 
     /**
      * Request account from LEDGIS Wallet
-     * @param {JSON} request - A JSON object detailing the connecting app and relevant data
      * @return {URL} - A deep link URL to invoke the wallet
      */
     getAccount() {
@@ -82,16 +81,18 @@ export default class ledgis {
 
     /**
      * Request transaction authorization from LEDGIS Wallet
-     * @param {JSON} request - A JSON object with all the data required to request a transaction 
+     * @param {String} request.currentAccount - Name of the account which the transaction should be executed
+     * @param {JSON} request.action - JSON object detailing the action that needs to be executed
      * @return {URL} - A deep link URL to invoke the wallet
      */
-    authorizeTransaction(request) {
+    sendAction(request) {
         const sendRequest = {
             payload: {
                 action: Actions.WALLET_TRANSACTION,
                 callbackURL: this.webSocketURL,
                 fallbackURL: this.fallbackURL,
-                request: request
+                currentAccount: request.currentAccount,
+                action: request.action,
             },
             requestId: this.clientId
         };

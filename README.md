@@ -121,4 +121,6 @@ This section is for LEDGIS Wallet developers to integrate communication protocol
 
 ## Complete API reference
 
-To be added 
+* `getAccount()` - Invokes Ledgis wallet to get Account information
+
+* `sendAction()` - Invokes Ledgis wallet on a certain action that can operate on the chain

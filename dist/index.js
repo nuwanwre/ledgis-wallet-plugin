@@ -9,6 +9,8 @@ var _uuid = _interopRequireDefault(require("uuid"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -91,7 +93,6 @@ function () {
     }
     /**
      * Request account from LEDGIS Wallet
-     * @param {JSON} request - A JSON object detailing the connecting app and relevant data
      * @return {URL} - A deep link URL to invoke the wallet
      */
 
@@ -110,20 +111,21 @@ function () {
     }
     /**
      * Request transaction authorization from LEDGIS Wallet
-     * @param {JSON} request - A JSON object with all the data required to request a transaction 
+     * @param {String} request.currentAccount - Name of the account which the transaction should be executed
+     * @param {JSON} request.action - JSON object detailing the action that needs to be executed
      * @return {URL} - A deep link URL to invoke the wallet
      */
 
   }, {
-    key: "authorizeTransaction",
-    value: function authorizeTransaction(request) {
+    key: "sendAction",
+    value: function sendAction(request) {
       var sendRequest = {
-        payload: {
+        payload: _defineProperty({
           action: Actions.WALLET_TRANSACTION,
           callbackURL: this.webSocketURL,
           fallbackURL: this.fallbackURL,
-          request: request
-        },
+          currentAccount: request.currentAccount
+        }, "action", request.action),
         requestId: this.clientId
       };
       return Utils.generateDeepLink(sendRequest);
