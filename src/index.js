@@ -92,7 +92,7 @@ export default class ledgis {
                 callbackURL: this.webSocketURL,
                 fallbackURL: this.fallbackURL,
                 currentAccount: request.currentAccount,
-                action: request.action,
+                request: request.action,
             },
             requestId: this.clientId
         };

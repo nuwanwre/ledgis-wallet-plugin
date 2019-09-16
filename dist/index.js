@@ -9,8 +9,6 @@ var _uuid = _interopRequireDefault(require("uuid"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -120,12 +118,13 @@ function () {
     key: "sendAction",
     value: function sendAction(request) {
       var sendRequest = {
-        payload: _defineProperty({
+        payload: {
           action: Actions.WALLET_TRANSACTION,
           callbackURL: this.webSocketURL,
           fallbackURL: this.fallbackURL,
-          currentAccount: request.currentAccount
-        }, "action", request.action),
+          currentAccount: request.currentAccount,
+          request: request.action
+        },
         requestId: this.clientId
       };
       console.log(sendRequest);
