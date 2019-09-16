@@ -128,6 +128,7 @@ function () {
         }, "action", request.action),
         requestId: this.clientId
       };
+      console.log(sendRequest);
       return Utils.generateDeepLink(sendRequest);
     }
     /**

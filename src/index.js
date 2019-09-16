@@ -97,6 +97,7 @@ export default class ledgis {
             requestId: this.clientId
         };
 
+        console.log(sendRequest);
         return Utils.generateDeepLink(sendRequest);
     }
 
