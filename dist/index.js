@@ -7,9 +7,7 @@ exports["default"] = void 0;
 
 var _uuid = _interopRequireDefault(require("uuid"));
 
-var _tweetnacl = require("tweetnacl");
-
-var _tweetnaclUtil = require("tweetnacl-util");
+var _hybridCryptoJs = require("hybrid-crypto-js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -72,13 +70,11 @@ function () {
       };
 
       this.webSocket.onmessage = function (e) {
-        var encrypted = e.data.data;
-
-        var shared = _tweetnacl.box.before(e.data.publicKey, _this.keyPair.secretKey);
-
-        var decrypted = Utils.decrypt(shared, encrypted);
-        e.data.data = decrypted;
-        callback(e.data);
+        var parsedData = JSON.parse(e.data);
+        var encryptedData = parsedData.data;
+        var decrypted = Utils.decrypt(_this.keyPair.privateKey, encryptedData);
+        parsedData.data = decrypted;
+        callback(parsedData);
       };
     }
     /**
@@ -190,10 +186,7 @@ function () {
       return new Promise(function (resolve, reject) {
         _this3.reconnectWebSocket().then(function () {
           try {
-            var sharedA = _tweetnacl.box.before(response.publicKey, _this3.keyPair.secretKey);
-
-            var encryptedData = Utils.encrypt(sharedA, response.data);
-            response.publicKey = _this3.keyPair.publicKey;
+            var encryptedData = Utils.encrypt(response.publicKey, response.data);
             response.data = encryptedData;
 
             _this3.webSocket.send(response);
@@ -300,50 +293,34 @@ function () {
     }
     /**
      * Encrypts using keypair
+     * @param {String} publicKey Public key used to encrypt data
+     * @param {String} message Stringified JSON object that needs to be encrypted
      * @return {String} A fully base64 encrypted message
      */
 
   }, {
     key: "encrypt",
-    value: function encrypt(secretOrSharedKey, json, key) {
-      var nonce = this.newNonce();
-      var messageInUTF8 = (0, _tweetnaclUtil.decodeUTF8)(JSON.stringify(json));
-      var encrypted = key ? (0, _tweetnacl.box)(messageInUTF8, nonce, key, secretOrSharedKey) : _tweetnacl.box.after(messageInUTF8, nonce, secretOrSharedKey);
-      var fullMessage = new Uint8Array(nonce.length + encrypted.length);
-      fullMessage.set(nonce);
-      fullMessage.set(encrypted, nonce.length);
-      var base64FullMessage = (0, _tweetnaclUtil.encodeBase64)(fullMessage);
-      return base64FullMessage;
+    value: function encrypt(publicKey, message) {
+      var crypt = new _hybridCryptoJs.Crypt({
+        md: 'sha512'
+      });
+      return crypt.encrypt(publicKey, message);
     }
     /**
      * Decrypt using Keypair
+     * @param {String} privateKey Private key used to decrypt data
+     * @param {String} message Encrypted message
      * @return {String} Decoded data
      */
 
   }, {
     key: "decrypt",
-    value: function decrypt(secretOrSharedKey, messageWithNonce, key) {
-      var messageWithNonceUTF8 = (0, _tweetnaclUtil.decodeBase64)(messageWithNonce);
-      var nonce = messageWithNonceUTF8.slice(0, _tweetnacl.box.nonceLength);
-      var message = messageWithNonceUTF8.slice(_tweetnacl.box.nonceLength, messageWithNonce.length);
-      var decrypted = key ? _tweetnacl.box.open(message, nonce, key, secretOrSharedKey) : _tweetnacl.box.open.after(message, nonce, secretOrSharedKey);
-
-      if (!decrypted) {
-        throw new Error('Could not decrypt message');
-      }
-
-      var base64DecryptedMessage = (0, _tweetnaclUtil.encodeUTF8)(decrypted);
-      return JSON.parse(base64DecryptedMessage);
-    }
-    /**
-     * Creates a nonce
-     * @return {String} A string containing the nonce
-     */
-
-  }, {
-    key: "newNonce",
-    value: function newNonce() {
-      return (0, _tweetnacl.randomBytes)(_tweetnacl.box.nonceLength);
+    value: function decrypt(privateKey, message) {
+      var crypt = new _hybridCryptoJs.Crypt({
+        md: 'sha512'
+      });
+      var decrypted = crypt.decrypt(privateKey, message);
+      return decrypted.message;
     }
     /**
      * Generates a keypair, public and secret
@@ -353,7 +330,13 @@ function () {
   }, {
     key: "generateKeyPair",
     value: function generateKeyPair() {
-      return _tweetnacl.box.keyPair();
+      var rsa = new _hybridCryptoJs.RSA();
+      rsa.generateKeyPair(function (keyPair) {
+        return {
+          privateKey: keyPair.privateKey,
+          publicKey: keyPair.publicKey
+        };
+      });
     }
   }]);
 

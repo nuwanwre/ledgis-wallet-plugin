@@ -1,11 +1,5 @@
 import uuid from 'uuid';
-import { box, randomBytes } from 'tweetnacl';
-import {
-    decodeUTF8,
-    encodeUTF8,
-    encodeBase64,
-    decodeBase64,
-} from 'tweetnacl-util';
+import {Crypt, RSA} from 'hybrid-crypto-js';
 
 /**
  * @classdesc Represents the LEDGIS Wallet SDK. It allows the client applications to integrate with wallet functionalities
@@ -51,12 +45,12 @@ export default class ledgis {
         }
     
         this.webSocket.onmessage = (e) => {
-            const encrypted = e.data.data;
-            const shared = box.before(e.data.publicKey, this.keyPair.secretKey)
-            const decrypted = Utils.decrypt(shared, encrypted);
-
-            e.data.data = decrypted;
-            callback(e.data);
+            const parsedData = JSON.parse(e.data);
+            const encryptedData = parsedData.data;
+            
+            const decrypted = Utils.decrypt(this.keyPair.privateKey, encryptedData);
+            parsedData.data = decrypted;
+            callback(parsedData);
         }
     }
 
@@ -153,10 +147,7 @@ export default class ledgis {
             this.reconnectWebSocket()
             .then(() => {
                 try {
-                    const sharedA = box.before(response.publicKey, this.keyPair.secretKey);
-                    const encryptedData = Utils.encrypt(sharedA, response.data);
-                    
-                    response.publicKey = this.keyPair.publicKey;
+                    const encryptedData = Utils.encrypt(response.publicKey, response.data);
                     response.data = encryptedData;
                     this.webSocket.send(response);
                     resolve(true);
@@ -243,51 +234,27 @@ class Utils {
 
     /**
      * Encrypts using keypair
+     * @param {String} publicKey Public key used to encrypt data
+     * @param {String} message Stringified JSON object that needs to be encrypted
      * @return {String} A fully base64 encrypted message
      */
-    static encrypt(secretOrSharedKey, json, key) {
-        const nonce = this.newNonce();
-        const messageInUTF8 = decodeUTF8(JSON.stringify(json));
-        const encrypted = key ? box(messageInUTF8, nonce, key, secretOrSharedKey) :
-                                box.after(messageInUTF8, nonce, secretOrSharedKey);
+    static encrypt(publicKey, message) {
+        const crypt = new Crypt({md: 'sha512'});
 
-        const fullMessage = new Uint8Array(nonce.length + encrypted.length);
-        fullMessage.set(nonce);
-        fullMessage.set(encrypted, nonce.length);
-
-        const base64FullMessage = encodeBase64(fullMessage);
-        return base64FullMessage;
+        return crypt.encrypt(publicKey, message);
     }
 
     /**
      * Decrypt using Keypair
+     * @param {String} privateKey Private key used to decrypt data
+     * @param {String} message Encrypted message
      * @return {String} Decoded data
      */
-    static decrypt(secretOrSharedKey, messageWithNonce, key) {
-        const messageWithNonceUTF8 = decodeBase64(messageWithNonce);
-        const nonce = messageWithNonceUTF8.slice(0, box.nonceLength);
-        const message = messageWithNonceUTF8.slice(
-            box.nonceLength,
-            messageWithNonce.length
-        );
+    static decrypt(privateKey, message) {
+        const crypt = new Crypt({md: 'sha512'});
+        const decrypted = crypt.decrypt(privateKey, message);
 
-        const decrypted = key ? box.open(message, nonce, key, secretOrSharedKey) :
-                                box.open.after(message, nonce, secretOrSharedKey);
-
-        if (!decrypted) {
-            throw new Error('Could not decrypt message');
-        }
-
-        const base64DecryptedMessage = encodeUTF8(decrypted);
-        return JSON.parse(base64DecryptedMessage);
-    }
-
-    /**
-     * Creates a nonce
-     * @return {String} A string containing the nonce
-     */
-    static newNonce() {
-        return randomBytes(box.nonceLength);
+        return decrypted.message;
     }
 
     /**
@@ -295,7 +262,14 @@ class Utils {
      * @return {JSON} JSON payload
      */
     static generateKeyPair() {
-        return box.keyPair();
+        const rsa = new RSA();
+
+        rsa.generateKeyPair(function(keyPair) {
+            return {
+                privateKey: keyPair.privateKey,
+                publicKey: keyPair.publicKey,
+            }
+        })
     }
 }
 
