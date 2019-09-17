@@ -1,4 +1,11 @@
 import uuid from 'uuid';
+import { box, randomBytes } from 'tweetnacl';
+import {
+    decodeUTF8,
+    encodeUTF8,
+    encodeBase64,
+    decodeBase64,
+} from 'tweetnacl-util';
 
 /**
  * @classdesc Represents the LEDGIS Wallet SDK. It allows the client applications to integrate with wallet functionalities
@@ -19,6 +26,7 @@ export default class ledgis {
         this.fallbackURL = options.fallbackURL;
         this.connected = false;
         this.connectWebSocket(options.callback);
+        this.keyPair = Utils.generateKeyPair();
     }
 
     /**
@@ -43,7 +51,12 @@ export default class ledgis {
         }
     
         this.webSocket.onmessage = (e) => {
-            callback(e);
+            const encrypted = e.data.data;
+            const shared = box.before(e.data.publicKey, this.keyPair.secretKey)
+            const decrypted = Utils.decrypt(shared, encrypted);
+
+            e.data.data = decrypted;
+            callback(e.data);
         }
     }
 
@@ -102,6 +115,7 @@ export default class ledgis {
                 fallbackURL: this.fallbackURL,
             },
             requestId: this.clientId,
+            publicKey: this.keyPair.publicKey,
         };
 
         return Utils.generateDeepLink(request);
@@ -139,6 +153,11 @@ export default class ledgis {
             this.reconnectWebSocket()
             .then(() => {
                 try {
+                    const sharedA = box.before(response.publicKey, this.keyPair.secretKey);
+                    const encryptedData = Utils.encrypt(sharedA, response.data);
+                    
+                    response.publicKey = this.keyPair.publicKey;
+                    response.data = encryptedData;
                     this.webSocket.send(response);
                     resolve(true);
                 }
@@ -220,6 +239,63 @@ class Utils {
         }
 
         return JSON.parse(result);
+    }
+
+    /**
+     * Encrypts using keypair
+     * @return {String} A fully base64 encrypted message
+     */
+    static encrypt(secretOrSharedKey, json, key) {
+        const nonce = this.newNonce();
+        const messageInUTF8 = decodeUTF8(JSON.stringify(json));
+        const encrypted = key ? box(messageInUTF8, nonce, key, secretOrSharedKey) :
+                                box.after(messageInUTF8, nonce, secretOrSharedKey);
+
+        const fullMessage = new Uint8Array(nonce.length + encrypted.length);
+        fullMessage.set(nonce);
+        fullMessage.set(encrypted, nonce.length);
+
+        const base64FullMessage = encodeBase64(fullMessage);
+        return base64FullMessage;
+    }
+
+    /**
+     * Decrypt using Keypair
+     * @return {String} Decoded data
+     */
+    static decrypt(secretOrSharedKey, messageWithNonce, key) {
+        const messageWithNonceUTF8 = decodeBase64(messageWithNonce);
+        const nonce = messageWithNonceUTF8.slice(0, box.nonceLength);
+        const message = messageWithNonceUTF8.slice(
+            box.nonceLength,
+            messageWithNonce.length
+        );
+
+        const decrypted = key ? box.open(message, nonce, key, secretOrSharedKey) :
+                                box.open.after(message, nonce, secretOrSharedKey);
+
+        if (!decrypted) {
+            throw new Error('Could not decrypt message');
+        }
+
+        const base64DecryptedMessage = encodeUTF8(decrypted);
+        return JSON.parse(base64DecryptedMessage);
+    }
+
+    /**
+     * Creates a nonce
+     * @return {String} A string containing the nonce
+     */
+    static newNonce() {
+        return randomBytes(box.nonceLength);
+    }
+
+    /**
+     * Generates a keypair, public and secret
+     * @return {JSON} JSON payload
+     */
+    static generateKeyPair() {
+        return box.keyPair();
     }
 }
 

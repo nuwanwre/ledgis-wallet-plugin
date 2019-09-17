@@ -7,6 +7,10 @@ exports["default"] = void 0;
 
 var _uuid = _interopRequireDefault(require("uuid"));
 
+var _tweetnacl = require("tweetnacl");
+
+var _tweetnaclUtil = require("tweetnacl-util");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -38,6 +42,7 @@ function () {
     this.fallbackURL = options.fallbackURL;
     this.connected = false;
     this.connectWebSocket(options.callback);
+    this.keyPair = Utils.generateKeyPair();
   }
   /**
    * Connects to websocket and binds with associated events
@@ -67,7 +72,13 @@ function () {
       };
 
       this.webSocket.onmessage = function (e) {
-        callback(e);
+        var encrypted = e.data.data;
+
+        var shared = _tweetnacl.box.before(e.data.publicKey, _this.keyPair.secretKey);
+
+        var decrypted = Utils.decrypt(shared, encrypted);
+        e.data.data = decrypted;
+        callback(e.data);
       };
     }
     /**
@@ -137,7 +148,8 @@ function () {
           callbackURL: this.webSocketURL,
           fallbackURL: this.fallbackURL
         },
-        requestId: this.clientId
+        requestId: this.clientId,
+        publicKey: this.keyPair.publicKey
       };
       return Utils.generateDeepLink(request);
     }
@@ -178,6 +190,12 @@ function () {
       return new Promise(function (resolve, reject) {
         _this3.reconnectWebSocket().then(function () {
           try {
+            var sharedA = _tweetnacl.box.before(response.publicKey, _this3.keyPair.secretKey);
+
+            var encryptedData = Utils.encrypt(sharedA, response.data);
+            response.publicKey = _this3.keyPair.publicKey;
+            response.data = encryptedData;
+
             _this3.webSocket.send(response);
 
             resolve(true);
@@ -279,6 +297,63 @@ function () {
       }
 
       return JSON.parse(result);
+    }
+    /**
+     * Encrypts using keypair
+     * @return {String} A fully base64 encrypted message
+     */
+
+  }, {
+    key: "encrypt",
+    value: function encrypt(secretOrSharedKey, json, key) {
+      var nonce = this.newNonce();
+      var messageInUTF8 = (0, _tweetnaclUtil.decodeUTF8)(JSON.stringify(json));
+      var encrypted = key ? (0, _tweetnacl.box)(messageInUTF8, nonce, key, secretOrSharedKey) : _tweetnacl.box.after(messageInUTF8, nonce, secretOrSharedKey);
+      var fullMessage = new Uint8Array(nonce.length + encrypted.length);
+      fullMessage.set(nonce);
+      fullMessage.set(encrypted, nonce.length);
+      var base64FullMessage = (0, _tweetnaclUtil.encodeBase64)(fullMessage);
+      return base64FullMessage;
+    }
+    /**
+     * Decrypt using Keypair
+     * @return {String} Decoded data
+     */
+
+  }, {
+    key: "decrypt",
+    value: function decrypt(secretOrSharedKey, messageWithNonce, key) {
+      var messageWithNonceUTF8 = (0, _tweetnaclUtil.decodeBase64)(messageWithNonce);
+      var nonce = messageWithNonceUTF8.slice(0, _tweetnacl.box.nonceLength);
+      var message = messageWithNonceUTF8.slice(_tweetnacl.box.nonceLength, messageWithNonce.length);
+      var decrypted = key ? _tweetnacl.box.open(message, nonce, key, secretOrSharedKey) : _tweetnacl.box.open.after(message, nonce, secretOrSharedKey);
+
+      if (!decrypted) {
+        throw new Error('Could not decrypt message');
+      }
+
+      var base64DecryptedMessage = (0, _tweetnaclUtil.encodeUTF8)(decrypted);
+      return JSON.parse(base64DecryptedMessage);
+    }
+    /**
+     * Creates a nonce
+     * @return {String} A string containing the nonce
+     */
+
+  }, {
+    key: "newNonce",
+    value: function newNonce() {
+      return (0, _tweetnacl.randomBytes)(_tweetnacl.box.nonceLength);
+    }
+    /**
+     * Generates a keypair, public and secret
+     * @return {JSON} JSON payload
+     */
+
+  }, {
+    key: "generateKeyPair",
+    value: function generateKeyPair() {
+      return _tweetnacl.box.keyPair();
     }
   }]);
 

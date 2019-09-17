@@ -15,6 +15,7 @@
   ],
   "private": true,
   "dependencies": {
+    "tweetnacl": "^1.0.1",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
