@@ -53,20 +53,25 @@ export default class ledgis {
      * No callback function is passed on this function
      */
     reconnectWebSocket() {
-        this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
-    
-        this.webSocket.onopen = () => {
-            this.connected = true;
-        };
-    
-        this.webSocket.onclose = () => {
-            this.connected = false;
-        }
-    
-        this.webSocket.onerror = (e) => {
-            this.connected = false;
-            this.webSocket.close();
-        }
+        return new Promise((resolve,reject) => {
+            this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
+            
+            this.webSocket.onopen = () => {
+                this.connected = true;
+                resolve(true);
+            };
+        
+            this.webSocket.onclose = () => {
+                this.connected = false;
+                reject(false);
+            }
+            
+            this.webSocket.onerror = (e) => {
+                this.connected = false;
+                this.webSocket.close();
+                reject(e);
+            }
+        })
     }
 
     /**

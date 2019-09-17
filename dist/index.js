@@ -81,21 +81,27 @@ function () {
     value: function reconnectWebSocket() {
       var _this2 = this;
 
-      this.webSocket = new WebSocket("".concat(this.webSocketURL, "/?id=").concat(this.clientId));
+      return new Promise(function (resolve, reject) {
+        _this2.webSocket = new WebSocket("".concat(_this2.webSocketURL, "/?id=").concat(_this2.clientId));
 
-      this.webSocket.onopen = function () {
-        _this2.connected = true;
-      };
+        _this2.webSocket.onopen = function () {
+          _this2.connected = true;
+          resolve(true);
+        };
 
-      this.webSocket.onclose = function () {
-        _this2.connected = false;
-      };
+        _this2.webSocket.onclose = function () {
+          _this2.connected = false;
+          reject(false);
+        };
 
-      this.webSocket.onerror = function (e) {
-        _this2.connected = false;
+        _this2.webSocket.onerror = function (e) {
+          _this2.connected = false;
 
-        _this2.webSocket.close();
-      };
+          _this2.webSocket.close();
+
+          reject(e);
+        };
+      });
     }
     /**
      * Gets the clientId associated with this instance
