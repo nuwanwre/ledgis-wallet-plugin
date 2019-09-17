@@ -127,7 +127,6 @@ function () {
         },
         requestId: this.clientId
       };
-      console.log(sendRequest);
       return Utils.generateDeepLink(sendRequest);
     }
     /**
@@ -142,25 +141,26 @@ function () {
     value: function sendResponse(response) {
       var _this2 = this;
 
-      if (!this.connected) this.connectWebSocket(this.callback);
       return new Promise(function (resolve, reject) {
-        try {
-          _this2.webSocket.send(response);
+        _this2.connectWebSocket(_this2.callback).then(function () {
+          try {
+            _this2.webSocket.send(response);
 
-          resolve(true);
-        } catch (e) {
-          reject(e);
-        }
+            resolve(true);
+          } catch (e) {
+            reject(e);
+          }
+        });
       });
     }
+  }], [{
+    key: "parseRequest",
+
     /**
      * Handle incoming requests connecting apps and parse to JSON
      * @param {String} request - String detailing the request
      * @return {JSON} JSON object bearing the account information or an Error detailing the issue
      */
-
-  }], [{
-    key: "parseRequest",
     value: function parseRequest(request) {
       var regex = /[?&]([^=#]+)=([^&#]*)/g,
           params = {},

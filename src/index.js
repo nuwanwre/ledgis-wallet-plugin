@@ -97,7 +97,6 @@ export default class ledgis {
             requestId: this.clientId
         };
 
-        console.log(sendRequest);
         return Utils.generateDeepLink(sendRequest);
     }
 
@@ -108,19 +107,19 @@ export default class ledgis {
      * a JSON object bearing the account information or an Error detailing the issue
      */
     sendResponse(response) {
-        if (!this.connected)
-            this.connectWebSocket(this.callback);
-
-        return new Promise((resolve, reject) => {
-            try {
-                this.webSocket.send(response);
-                resolve(true);
-            }
-            catch (e) {
-                reject(e);
-            }
+        return new Promise ((resolve, reject) => {
+            this.connectWebSocket(this.callback)
+            .then(() => {
+                try {
+                    this.webSocket.send(response);
+                    resolve(true);
+                }
+                catch (e) {
+                    reject(e);
+                }
+            })
         })
-    }
+    };
 
     /**
      * Handle incoming requests connecting apps and parse to JSON
