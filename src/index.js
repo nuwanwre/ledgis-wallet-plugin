@@ -20,7 +20,15 @@ export default class ledgis {
         this.fallbackURL = options.fallbackURL;
         this.connected = false;
         this.connectWebSocket(options.callback);
-        this.keyPair = Utils.generateKeyPair();
+        Utils.generateKeyPair(this.getKeyPair(keyPair));
+    }
+
+    /**
+     * Saves key pair object
+     * @param {JSON} keyPair - JSON object containing the keypair 
+     */
+    getKeyPair(keyPair) {
+        this.keyPair = keyPair;
     }
 
     /**
@@ -265,10 +273,8 @@ class Utils {
         const rsa = new RSA();
 
         rsa.generateKeyPair(function(keyPair) {
-            return {
-                privateKey: keyPair.privateKey,
-                publicKey: keyPair.publicKey,
-            }
+            const publicKey = keyPair.publicKey;
+            const privateKey = keyPair.privateKey;
         })
     }
 }

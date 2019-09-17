@@ -40,15 +40,25 @@ function () {
     this.fallbackURL = options.fallbackURL;
     this.connected = false;
     this.connectWebSocket(options.callback);
-    this.keyPair = Utils.generateKeyPair();
+    Utils.generateKeyPair(this.getKeyPair(keyPair));
   }
   /**
-   * Connects to websocket and binds with associated events
-   * @param {function} - A callback function to return response events from WS
+   * Saves key pair object
+   * @param {JSON} keyPair - JSON object containing the keypair 
    */
 
 
   _createClass(ledgis, [{
+    key: "getKeyPair",
+    value: function getKeyPair(keyPair) {
+      this.keyPair = keyPair;
+    }
+    /**
+     * Connects to websocket and binds with associated events
+     * @param {function} - A callback function to return response events from WS
+     */
+
+  }, {
     key: "connectWebSocket",
     value: function connectWebSocket(callback) {
       var _this = this;
@@ -332,10 +342,8 @@ function () {
     value: function generateKeyPair() {
       var rsa = new _hybridCryptoJs.RSA();
       rsa.generateKeyPair(function (keyPair) {
-        return {
-          privateKey: keyPair.privateKey,
-          publicKey: keyPair.publicKey
-        };
+        var publicKey = keyPair.publicKey;
+        var privateKey = keyPair.privateKey;
       });
     }
   }]);
