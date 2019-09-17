@@ -23,6 +23,7 @@ export default class ledgis {
 
     /**
      * Connects to websocket and binds with associated events
+     * @param {function} - A callback function to return response events from WS
      */
     connectWebSocket(callback) {
         this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
@@ -43,6 +44,28 @@ export default class ledgis {
     
         this.webSocket.onmessage = (e) => {
             callback(e);
+        }
+    }
+
+    /**
+     * Reconnects the websocket in the case of an connection reset
+     * Note: 
+     * No callback function is passed on this function
+     */
+    reconnectWebSocket() {
+        this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
+    
+        this.webSocket.onopen = () => {
+            this.connected = true;
+        };
+    
+        this.webSocket.onclose = () => {
+            this.connected = false;
+        }
+    
+        this.webSocket.onerror = (e) => {
+            this.connected = false;
+            this.webSocket.close();
         }
     }
 
@@ -108,7 +131,7 @@ export default class ledgis {
      */
     sendResponse(response) {
         return new Promise ((resolve, reject) => {
-            this.connectWebSocket(this.callback)
+            this.reconnectWebSocket()
             .then(() => {
                 try {
                     this.webSocket.send(response);

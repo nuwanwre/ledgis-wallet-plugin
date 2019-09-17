@@ -41,6 +41,7 @@ function () {
   }
   /**
    * Connects to websocket and binds with associated events
+   * @param {function} - A callback function to return response events from WS
    */
 
 
@@ -67,6 +68,33 @@ function () {
 
       this.webSocket.onmessage = function (e) {
         callback(e);
+      };
+    }
+    /**
+     * Reconnects the websocket in the case of an connection reset
+     * Note: 
+     * No callback function is passed on this function
+     */
+
+  }, {
+    key: "reconnectWebSocket",
+    value: function reconnectWebSocket() {
+      var _this2 = this;
+
+      this.webSocket = new WebSocket("".concat(this.webSocketURL, "/?id=").concat(this.clientId));
+
+      this.webSocket.onopen = function () {
+        _this2.connected = true;
+      };
+
+      this.webSocket.onclose = function () {
+        _this2.connected = false;
+      };
+
+      this.webSocket.onerror = function (e) {
+        _this2.connected = false;
+
+        _this2.webSocket.close();
       };
     }
     /**
@@ -139,12 +167,12 @@ function () {
   }, {
     key: "sendResponse",
     value: function sendResponse(response) {
-      var _this2 = this;
+      var _this3 = this;
 
       return new Promise(function (resolve, reject) {
-        _this2.connectWebSocket(_this2.callback).then(function () {
+        _this3.reconnectWebSocket().then(function () {
           try {
-            _this2.webSocket.send(response);
+            _this3.webSocket.send(response);
 
             resolve(true);
           } catch (e) {
