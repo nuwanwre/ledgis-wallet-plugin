@@ -40,7 +40,7 @@ function () {
     this.fallbackURL = options.fallbackURL;
     this.connected = false;
     this.connectWebSocket(options.callback);
-    Utils.generateKeyPair(this.getKeyPair(keyPair));
+    Utils.generateKeyPair(this.getKeyPair);
   }
   /**
    * Saves key pair object
