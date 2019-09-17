@@ -339,11 +339,10 @@ function () {
 
   }, {
     key: "generateKeyPair",
-    value: function generateKeyPair() {
+    value: function generateKeyPair(callback) {
       var rsa = new _hybridCryptoJs.RSA();
       rsa.generateKeyPair(function (keyPair) {
-        var publicKey = keyPair.publicKey;
-        var privateKey = keyPair.privateKey;
+        callback(keyPair);
       });
     }
   }]);

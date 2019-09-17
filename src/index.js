@@ -269,12 +269,11 @@ class Utils {
      * Generates a keypair, public and secret
      * @return {JSON} JSON payload
      */
-    static generateKeyPair() {
+    static generateKeyPair(callback) {
         const rsa = new RSA();
 
         rsa.generateKeyPair(function(keyPair) {
-            const publicKey = keyPair.publicKey;
-            const privateKey = keyPair.privateKey;
+            callback(keyPair);
         })
     }
 }
