@@ -50,7 +50,14 @@ function () {
     value: function connectWebSocket(callback) {
       var _this = this;
 
-      this.webSocket = new WebSocket("".concat(this.webSocketURL, "/?id=").concat(this.clientId)); // Attach event listeners
+      this.webSocket = new WebSocket("".concat(this.webSocketURL, "/?id=").concat(this.clientId), null, {
+        headers: {
+          'Accept-Language': 'en,en-US;q=0.9,ru;q=0.8,de;q=0.7',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36'
+        }
+      }); // Attach event listeners
 
       this.webSocket.onopen = function () {
         _this.connected = true;
@@ -82,7 +89,14 @@ function () {
       var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        _this2.webSocket = new WebSocket("".concat(_this2.webSocketURL, "/?id=").concat(_this2.clientId));
+        _this2.webSocket = new WebSocket("".concat(_this2.webSocketURL, "/?id=").concat(_this2.clientId), null, {
+          headers: {
+            'Accept-Language': 'en,en-US;q=0.9,ru;q=0.8,de;q=0.7',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36'
+          }
+        });
 
         _this2.webSocket.onopen = function () {
           _this2.connected = true;

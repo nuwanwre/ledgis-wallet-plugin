@@ -26,7 +26,14 @@ export default class ledgis {
      * @param {function} - A callback function to return response events from WS
      */
     connectWebSocket(callback) {
-        this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
+        this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`, null, {
+            headers: {
+              'Accept-Language': 'en,en-US;q=0.9,ru;q=0.8,de;q=0.7',
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache',
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36'
+            }
+        });
     
         // Attach event listeners
         this.webSocket.onopen = () => {
@@ -54,7 +61,14 @@ export default class ledgis {
      */
     reconnectWebSocket() {
         return new Promise((resolve,reject) => {
-            this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
+            this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`, null, {
+                headers: {
+                  'Accept-Language': 'en,en-US;q=0.9,ru;q=0.8,de;q=0.7',
+                  'Cache-Control': 'no-cache',
+                  'Pragma': 'no-cache',
+                  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36'
+                }
+            });
             
             this.webSocket.onopen = () => {
                 this.connected = true;
