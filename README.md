@@ -12,7 +12,7 @@ This library utilizes the [Authentication Protocol](https://github.com/EOSIO/eos
 
 ## Integration Guide for Web Apps and dApps
 
-This section shows how to authenticate and sign transactions using LEDGIS Wallet through dApp or Web App.
+This section shows how to authenticate and sign transactions using LEDGIS Wallet throughw dApp or Web App.
 
 1. Use ```npm``` or ```yarn``` to install the package.
 
@@ -112,7 +112,13 @@ This section is for LEDGIS Wallet developers to integrate communication protocol
       const accData = `account: ${res.account_name}\nbalance: ${
         res.core_liquid_balance
       }`;
-      ecrxObj.sendResponse(JSON.stringify({to: request.requestId, data: accData}));
+
+      const response = {
+          requestId: request.requestId,
+          success: true,
+          data: accData,
+      }
+      ecrxObj.sendResponse(JSON.stringify(response));
     });
     ```
 
