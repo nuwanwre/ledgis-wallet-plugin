@@ -77,6 +77,22 @@ This section shows how to authenticate and sign transactions using LEDGIS Wallet
     }
     ```
 
+### Note on dApps on iOS using Ledgis Wallet Plugin 
+
+On iOS, native applications are unable to keep a WebSocket connection open for more than 30 seconds due to resoure limitations. To tackle this issue, native dApps can utilize application state to reconnect to websocket. 
+
+For React Native, a guide on App States can be found [here](https://facebook.github.io/react-native/docs/appstate)
+
+Sample code on how to utilize this function,
+
+```js
+ ledgis.reconnectWebSocket()
+    .then(() => alert('connected'))
+    .catch(e => alert(e));
+```
+
+Initializing a new ledgis object will discard old responses, and the cache will be invalidated. Therefore, reconnecting to the existing websocket should suffice.
+
 ## Integration Guide for LEDGIS Wallet
 
 This section is for LEDGIS Wallet developers to integrate communication protocols to authenticate transactions, allowing full-duplex communication between dApps/Web Apps and LEDGIS Wallet.
@@ -127,6 +143,68 @@ This section is for LEDGIS Wallet developers to integrate communication protocol
 
 ## Complete API reference
 
+Assume `ledgis` is previously instantiated object.
+
 * `getAccount()` - Invokes Ledgis wallet to get Account information
 
 * `sendAction()` - Invokes Ledgis wallet on a certain action that can operate on the chain
+
+    Action requests follows the eosjs format
+
+    **Transfer Request**
+    ```js
+    const txReq = {
+        currentAccount: 'test112.ibct',
+        action: {
+            actions: [{
+                account: 'led.token',
+                name: 'transfer',
+                authorization: [{
+                    actor: 'test111.ibct',
+                    permission: 'owner',
+                }],
+                data: {
+                    from: 'test111.ibct',
+                    to: 'test112.ibct',
+                    quantity: '1.0000 LED',
+                    memo: 'Signed with Ledgis Mobile',
+                },
+            }]
+        }
+    }
+
+    const txURL = window.ledgis.sendAction(txRequest);
+    window.location = txURL; // Web only
+    Linking.openURL(txURL).catch(err => // React-Native only
+      // Handle errors
+    );    
+    ```
+
+    **Stake Request**
+    ```js
+    const txRequest = {
+        currentAccount: 'test111.ibct',
+        action: {
+            actions: [{
+            account: 'led',
+            name: 'delegatebw',
+            authorization: [{
+                actor: 'test111.ibct',
+                permission: 'owner',
+            }],
+            data: {
+                from: 'test111.ibct',
+                receiver: 'test111.ibct',
+                stake_net_quantity: "1.0000 LED",
+                stake_cpu_quantity: "1.0000 LED",
+                transfer:false
+            },
+        }]
+    }
+
+    const txURL = window.ledgis.sendAction(txRequest);
+    window.location = txURL; // Web only
+    Linking.openURL(txURL).catch(err => // React-Native only
+      // Handle errors
+    );
+    ```
