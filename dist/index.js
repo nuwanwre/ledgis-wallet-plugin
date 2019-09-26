@@ -28,6 +28,7 @@ function () {
    * @param {String} options.webSocketURL - webSocket URL once the request has been fulfilled
    * @param {String} options.callback - Callback function that listens to incoming websocket data
    * @param {String} options.fallbackURL - URL to fallback once the request has been fulfilled/rejected
+   * @param {String} options.appName - Name of the connecting app
    */
   function ledgis(options) {
     _classCallCheck(this, ledgis);
@@ -37,6 +38,7 @@ function () {
     this.callback = options.callback;
     this.fallbackURL = options.fallbackURL;
     this.connected = false;
+    this.appName = appName;
     this.connectWebSocket(options.callback);
   }
   /**
@@ -140,7 +142,8 @@ function () {
         payload: {
           action: Actions.WALLET_LOGIN,
           callbackURL: this.webSocketURL,
-          fallbackURL: this.fallbackURL
+          fallbackURL: this.fallbackURL,
+          appName: this.appName
         },
         requestId: this.clientId
       };
@@ -162,7 +165,8 @@ function () {
           callbackURL: this.webSocketURL,
           fallbackURL: this.fallbackURL,
           currentAccount: request.currentAccount,
-          request: request.action
+          request: request.action,
+          appName: this.appName
         },
         requestId: this.clientId
       };

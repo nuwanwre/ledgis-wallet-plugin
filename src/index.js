@@ -11,6 +11,7 @@ export default class ledgis {
      * @param {String} options.webSocketURL - webSocket URL once the request has been fulfilled
      * @param {String} options.callback - Callback function that listens to incoming websocket data
      * @param {String} options.fallbackURL - URL to fallback once the request has been fulfilled/rejected
+     * @param {String} options.appName - Name of the connecting app
      */
     constructor(options) {
         this.webSocketURL = options.webSocketURL;
@@ -18,6 +19,7 @@ export default class ledgis {
         this.callback = options.callback;
         this.fallbackURL = options.fallbackURL;
         this.connected = false;
+        this.appName = appName;
         this.connectWebSocket(options.callback);
     }
 
@@ -105,6 +107,7 @@ export default class ledgis {
                 action: Actions.WALLET_LOGIN,
                 callbackURL: this.webSocketURL,
                 fallbackURL: this.fallbackURL,
+                appName: this.appName,
             },
             requestId: this.clientId,
         };
@@ -126,6 +129,7 @@ export default class ledgis {
                 fallbackURL: this.fallbackURL,
                 currentAccount: request.currentAccount,
                 request: request.action,
+                appName: this.appName,
             },
             requestId: this.clientId
         };

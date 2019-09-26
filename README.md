@@ -27,7 +27,8 @@ This section shows how to authenticate and sign transactions using LEDGIS Wallet
     const options = {
         webSocketURL: 'ws://192.168.1.78:1337',
         callback: this.callback,
-        fallbackURL: 'https://dapp.io/fallback'
+        fallbackURL: 'https://dapp.io/fallback',
+        appName: 'myapp'
     }
 
     const ledgisObj = new ecrx(options);
