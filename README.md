@@ -47,7 +47,8 @@ This section shows how to authenticate and sign transactions using LEDGIS Wallet
         | Safari - iOS               | `http://dapp.io/fallback`              |
         | Chrome - iOS               | `googlechrome://dapp.io/fallback`      |
         |                            | `googlechromes://dapp.io/fallback`     |
-        | Firefox - iOS, Android     | `firefox://open-url?url=http://dapp.io`|
+        | Firefox - iOS, Android     | `firefox://open-url?url=http://dapp.io` |
+        | Native App - iOS, Android  | `myapp://fallback`                     |
 
         Calling applications should provide correct URI schemes depending on the client platform.
 
