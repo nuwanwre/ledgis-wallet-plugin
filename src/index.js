@@ -19,7 +19,7 @@ export default class ledgis {
         this.callback = options.callback;
         this.fallbackURL = options.fallbackURL;
         this.connected = false;
-        this.appName = appName;
+        this.appName = options.appName;
         this.connectWebSocket(options.callback);
     }
 
