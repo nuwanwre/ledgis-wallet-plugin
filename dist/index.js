@@ -88,6 +88,12 @@ function () {
 
         _this2.webSocket.onopen = function () {
           _this2.connected = true;
+
+          _this2.webSocket.onmessage = function (e) {
+            _this2.callback(e);
+          };
+
+          resolve(true);
         };
 
         _this2.webSocket.onclose = function () {
@@ -102,12 +108,6 @@ function () {
 
           reject(e);
         };
-
-        _this2.webSocket.onmessage = function (e) {
-          _this2.callback(e);
-        };
-
-        resolve(true);
       });
     }
     /**

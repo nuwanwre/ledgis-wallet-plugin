@@ -60,6 +60,12 @@ export default class ledgis {
             
             this.webSocket.onopen = () => {
                 this.connected = true;
+
+                this.webSocket.onmessage = (e) => {
+                    this.callback(e);
+                }
+
+                resolve(true);
             };
         
             this.webSocket.onclose = () => {
@@ -72,12 +78,6 @@ export default class ledgis {
                 this.webSocket.close();
                 reject(e);
             }
-
-            this.webSocket.onmessage = (e) => {
-                this.callback(e);
-            }
-
-            resolve(true);
         })
     }
 
