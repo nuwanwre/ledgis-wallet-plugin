@@ -185,7 +185,17 @@ function () {
       var _this3 = this;
 
       return new Promise(function (resolve, reject) {
-        _this3.reconnectWebSocket().then(function () {
+        if (!_this3.connected) {
+          _this3.reconnectWebSocket().then(function () {
+            try {
+              _this3.webSocket.send(response);
+
+              resolve(true);
+            } catch (e) {
+              reject(e);
+            }
+          });
+        } else {
           try {
             _this3.webSocket.send(response);
 
@@ -193,7 +203,7 @@ function () {
           } catch (e) {
             reject(e);
           }
-        });
+        }
       });
     }
   }], [{

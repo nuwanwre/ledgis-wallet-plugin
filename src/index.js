@@ -145,8 +145,18 @@ export default class ledgis {
      */
     sendResponse(response) {
         return new Promise ((resolve, reject) => {
-            this.reconnectWebSocket()
-            .then(() => {
+            if (!this.connected) {
+                this.reconnectWebSocket()
+                .then(() => {
+                    try {
+                        this.webSocket.send(response);
+                        resolve(true);
+                    }
+                    catch (e) {
+                        reject(e);
+                    }
+                })
+            } else {
                 try {
                     this.webSocket.send(response);
                     resolve(true);
@@ -154,7 +164,7 @@ export default class ledgis {
                 catch (e) {
                     reject(e);
                 }
-            })
+            }
         })
     };
 
