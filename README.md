@@ -22,7 +22,7 @@ This section shows how to authenticate and sign transactions using LEDGIS Wallet
 
 2. Import the package.
    
-    ``` bash
+    ``` js
     import ecrx from '@ibct/ledgis-wallet-plugin';
     ```
 
