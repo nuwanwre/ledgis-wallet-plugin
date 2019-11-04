@@ -16,11 +16,15 @@ This section shows how to authenticate and sign transactions using LEDGIS Wallet
 
 1. Use ```npm``` or ```yarn``` to install the package.
 
-    `yarn add git+https://github.com/nuwanwre/ledgis-wallet-plugin.git`
+    ``` bash
+    yarn add git+https://github.com/nuwanwre/ledgis-wallet-plugin.git
+    ```
 
 2. Import the package.
    
-    `import ecrx from '@ibct/ledgis-wallet-plugin';`
+    ``` bash
+    import ecrx from '@ibct/ledgis-wallet-plugin';
+    ```
 
 3. Initialize the instance
     ``` js
