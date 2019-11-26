@@ -132,18 +132,21 @@ function () {
     }
     /**
      * Request account from LEDGIS Wallet
+     * @param {String} chainId - Chain ID of the account that you are requesting
      * @return {URL} - A deep link URL to invoke the wallet
      */
 
   }, {
     key: "getAccount",
-    value: function getAccount() {
+    value: function getAccount(chainId) {
+      if (chainId === "" || typeof chainId === "undefined") throw 'ChainId not defined';
       var request = {
         payload: {
           action: Actions.WALLET_LOGIN,
           callbackURL: this.webSocketURL,
           fallbackURL: this.fallbackURL,
-          appName: this.appName
+          appName: this.appName,
+          chainId: chainId
         },
         requestId: this.clientId
       };
@@ -152,6 +155,7 @@ function () {
     /**
      * Request transaction authorization from LEDGIS Wallet
      * @param {String} request.currentAccount - Name of the account which the transaction should be executed
+     * @param {String} request.chainId - Chain ID of the account that you are requesting
      * @param {JSON} request.action - JSON object detailing the action that needs to be executed
      * @return {URL} - A deep link URL to invoke the wallet
      */
@@ -159,12 +163,16 @@ function () {
   }, {
     key: "sendAction",
     value: function sendAction(request) {
+      if (request.chainId === "" || typeof request.chainId === "undefined") throw 'ChainId not defined';
+      if (request.currentAccount === "" || typeof request.currentAccount === "undefined") throw 'CurrentAccount not defined';
+      if (request.action === {} || typeof request.action === "undefined") throw 'Actions not defined';
       var sendRequest = {
         payload: {
           action: Actions.WALLET_TRANSACTION,
           callbackURL: this.webSocketURL,
           fallbackURL: this.fallbackURL,
           currentAccount: request.currentAccount,
+          chainId: request.chainId,
           request: request.action,
           appName: this.appName
         },

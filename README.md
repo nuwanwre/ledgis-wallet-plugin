@@ -109,7 +109,9 @@ This section is for LEDGIS Wallet developers to integrate communication protocol
 
 2. Import the package.
    
-    `import ecrx from '@ibct/ecrx-wallet-sdk';`
+    ```js
+    import ecrx from '@ibct/ecrx-wallet-sdk';
+    ```
 
 3. Initialize the instance
     ``` js
@@ -152,6 +154,18 @@ This section is for LEDGIS Wallet developers to integrate communication protocol
 Assume `ledgis` is previously instantiated object.
 
 * `getAccount()` - Invokes Ledgis wallet to get Account information
+
+    Get account action requires that the requesting app provide Chain ID of the blockchain.
+    
+    **Login Request**
+    ```js
+    const loginURL = window.ledgis.getAccount('<chainID>');
+
+    window.location = loginURL; // Web only
+    Linking.openURL(loginURL).catch(err => // React-Native only
+      // Handle errors
+    );    
+    ```
 
 * `sendAction()` - Invokes Ledgis wallet on a certain action that can operate on the chain
 
