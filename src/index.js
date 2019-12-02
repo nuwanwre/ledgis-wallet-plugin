@@ -1,7 +1,7 @@
 import uuid from 'uuid';
-
+import socketClient from 'socket.io-client';
 /**
- * @classdesc Represents the LEDGIS Wallet SDK. It allows the client applications to integrate with wallet functionalities
+ * @classdesc Represents the LEDGIS Wallet Plugin. It allows the client applications to integrate with wallet functionalities
  * @class
  */
 export default class ledgis {
@@ -28,56 +28,73 @@ export default class ledgis {
      * @param {function} - A callback function to return response events from WS
      */
     connectWebSocket(callback) {
-        this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
-    
-        // Attach event listeners
-        this.webSocket.onopen = () => {
+        this.webSocket = socketClient(this.webSocketURL);
+
+        this.webSocket.on('connect', () => {
+            this.webSocket.emit('authentication', {
+                clientId: this.clientId
+            })
+        })
+
+        this.webSocket.on('authenticated', () => {
             this.connected = true;
-        };
-    
-        this.webSocket.onclose = () => {
+        })
+
+        this.webSocket.on('unauthorized', (reason) => {
+            console.log(`WEBSOCKET_UNAUTHORIZED: ${reason}`);
+            this.webSocket.disconnect();
             this.connected = false;
-        }
-    
-        this.webSocket.onerror = (e) => {
+        });
+
+        this.webSocket.on('disconnect', (reason) => {
+            console.log(`WEBSOCKET_DISCONNECTED: ${reason}`);
             this.connected = false;
-            this.webSocket.close();
-        }
-    
-        this.webSocket.onmessage = (e) => {
-            callback(e);
-        }
+        });
+
+        this.webSocket.on('message', (data) => {
+            callback(data);
+        });
+
+        this.webSocket.open();
     }
 
     /**
      * Reconnects the websocket in the case of an connection reset
-     * Note: 
-     * No callback function is passed on this function
+     * @returns {UUID}
      */
     reconnectWebSocket() {
-        return new Promise((resolve,reject) => {
-            this.webSocket = new WebSocket(`${this.webSocketURL}/?id=${this.clientId}`);
-            
-            this.webSocket.onopen = () => {
+        return new Promise((resolve, reject) => {
+            this.webSocket = socketClient(this.webSocketURL);
+
+            this.webSocket.on('connect', () => {
+                this.webSocket.emit('authentication', {
+                    clientId: this.clientId
+                })
+            })
+
+            this.webSocket.on('authenticated', () => {
                 this.connected = true;
+            })
 
-                this.webSocket.onmessage = (e) => {
-                    this.callback(e);
-                }
+            this.webSocket.on('unauthorized', (reason) => {
+                console.log(`WEBSOCKET_UNAUTHORIZED: ${reason}`);
+                this.webSocket.disconnect();
+                this.connected = false;
+                reject(reason);
+            });
 
-                resolve(true);
-            };
-        
-            this.webSocket.onclose = () => {
+            this.webSocket.on('disconnect', (reason) => {
+                console.log(`WEBSOCKET_DISCONNECTED: ${reason}`);
                 this.connected = false;
-                reject(false);
-            }
-            
-            this.webSocket.onerror = (e) => {
-                this.connected = false;
-                this.webSocket.close();
-                reject(e);
-            }
+                reject(reason);
+            });
+
+            this.webSocket.on('message', (data) => {
+                this.callback(data);
+            });
+
+            this.webSocket.open();
+            resolve(true);
         })
     }
 
@@ -134,7 +151,7 @@ export default class ledgis {
             throw 'CurrentAccount not defined';
         if (request.action === {} || (typeof request.action === "undefined"))
             throw 'Actions not defined';
-        
+
 
         const sendRequest = {
             payload: {
@@ -159,24 +176,22 @@ export default class ledgis {
      * a JSON object bearing the account information or an Error detailing the issue
      */
     sendResponse(response) {
-        return new Promise ((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if (!this.connected) {
                 this.reconnectWebSocket()
-                .then(() => {
-                    try {
-                        this.webSocket.send(response);
-                        resolve(true);
-                    }
-                    catch (e) {
-                        reject(e);
-                    }
-                })
+                    .then(() => {
+                        try {
+                            this.webSocket.emit({payload: response});
+                            resolve(true);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    })
             } else {
                 try {
-                    this.webSocket.send(response);
+                    this.webSocket.emit({payload: response});
                     resolve(true);
-                }
-                catch (e) {
+                } catch (e) {
                     reject(e);
                 }
             }
@@ -190,8 +205,8 @@ export default class ledgis {
      */
     static parseRequest(request) {
         let regex = /[?&]([^=#]+)=([^&#]*)/g,
-        params = {},
-        match;
+            params = {},
+            match;
 
         while ((match = regex.exec(request))) {
             params[match[1]] = match[2];
@@ -202,14 +217,14 @@ export default class ledgis {
         const response = {
             payload: payload,
             requestId: params.requestId
-        } 
+        }
 
         return response;
     }
 }
 
 /**
- * @classdesc Helper functions
+ * @classdesc Utility functions to encode, decode, and generate Deep Links
  * @class
  */
 class Utils {
@@ -232,11 +247,11 @@ class Utils {
     static hexEncode(payload) {
         let hex, i;
         let result = "";
-        for (i=0; i<payload.length; i++) {
+        for (i = 0; i < payload.length; i++) {
             hex = payload.charCodeAt(i).toString(16);
-            result += ("000"+hex).slice(-4);
+            result += ("000" + hex).slice(-4);
         }
-    
+
         return result
     }
 
@@ -249,7 +264,7 @@ class Utils {
         let j;
         let hexes = payload.match(/.{1,4}/g) || [];
         let result = "";
-        for(j = 0; j<hexes.length; j++) {
+        for (j = 0; j < hexes.length; j++) {
             result += String.fromCharCode(parseInt(hexes[j], 16));
         }
 

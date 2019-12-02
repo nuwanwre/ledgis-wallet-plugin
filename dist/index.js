@@ -7,6 +7,8 @@ exports["default"] = void 0;
 
 var _uuid = _interopRequireDefault(require("uuid"));
 
+var _socket = _interopRequireDefault(require("socket.io-client"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -16,7 +18,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
- * @classdesc Represents the LEDGIS Wallet SDK. It allows the client applications to integrate with wallet functionalities
+ * @classdesc Represents the LEDGIS Wallet Plugin. It allows the client applications to integrate with wallet functionalities
  * @class
  */
 var ledgis =
@@ -52,30 +54,34 @@ function () {
     value: function connectWebSocket(callback) {
       var _this = this;
 
-      this.webSocket = new WebSocket("".concat(this.webSocketURL, "/?id=").concat(this.clientId)); // Attach event listeners
-
-      this.webSocket.onopen = function () {
+      this.webSocket = (0, _socket["default"])(this.webSocketURL);
+      this.webSocket.on('connect', function () {
+        _this.webSocket.emit('authentication', {
+          clientId: _this.clientId
+        });
+      });
+      this.webSocket.on('authenticated', function () {
         _this.connected = true;
-      };
+      });
+      this.webSocket.on('unauthorized', function (reason) {
+        console.log("WEBSOCKET_UNAUTHORIZED: ".concat(reason));
 
-      this.webSocket.onclose = function () {
+        _this.webSocket.disconnect();
+
         _this.connected = false;
-      };
-
-      this.webSocket.onerror = function (e) {
+      });
+      this.webSocket.on('disconnect', function (reason) {
+        console.log("WEBSOCKET_DISCONNECTED: ".concat(reason));
         _this.connected = false;
-
-        _this.webSocket.close();
-      };
-
-      this.webSocket.onmessage = function (e) {
-        callback(e);
-      };
+      });
+      this.webSocket.on('message', function (data) {
+        callback(data);
+      });
+      this.webSocket.open();
     }
     /**
      * Reconnects the websocket in the case of an connection reset
-     * Note: 
-     * No callback function is passed on this function
+     * @returns {UUID}
      */
 
   }, {
@@ -84,30 +90,40 @@ function () {
       var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        _this2.webSocket = new WebSocket("".concat(_this2.webSocketURL, "/?id=").concat(_this2.clientId));
+        _this2.webSocket = (0, _socket["default"])(_this2.webSocketURL);
 
-        _this2.webSocket.onopen = function () {
+        _this2.webSocket.on('connect', function () {
+          _this2.webSocket.emit('authentication', {
+            clientId: _this2.clientId
+          });
+        });
+
+        _this2.webSocket.on('authenticated', function () {
           _this2.connected = true;
+        });
 
-          _this2.webSocket.onmessage = function (e) {
-            _this2.callback(e);
-          };
+        _this2.webSocket.on('unauthorized', function (reason) {
+          console.log("WEBSOCKET_UNAUTHORIZED: ".concat(reason));
 
-          resolve(true);
-        };
+          _this2.webSocket.disconnect();
 
-        _this2.webSocket.onclose = function () {
           _this2.connected = false;
-          reject(false);
-        };
+          reject(reason);
+        });
 
-        _this2.webSocket.onerror = function (e) {
+        _this2.webSocket.on('disconnect', function (reason) {
+          console.log("WEBSOCKET_DISCONNECTED: ".concat(reason));
           _this2.connected = false;
+          reject(reason);
+        });
 
-          _this2.webSocket.close();
+        _this2.webSocket.on('message', function (data) {
+          _this2.callback(data);
+        });
 
-          reject(e);
-        };
+        _this2.webSocket.open();
+
+        resolve(true);
       });
     }
     /**
@@ -196,7 +212,9 @@ function () {
         if (!_this3.connected) {
           _this3.reconnectWebSocket().then(function () {
             try {
-              _this3.webSocket.send(response);
+              _this3.webSocket.emit({
+                payload: response
+              });
 
               resolve(true);
             } catch (e) {
@@ -205,7 +223,9 @@ function () {
           });
         } else {
           try {
-            _this3.webSocket.send(response);
+            _this3.webSocket.emit({
+              payload: response
+            });
 
             resolve(true);
           } catch (e) {
@@ -243,7 +263,7 @@ function () {
   return ledgis;
 }();
 /**
- * @classdesc Helper functions
+ * @classdesc Utility functions to encode, decode, and generate Deep Links
  * @class
  */
 

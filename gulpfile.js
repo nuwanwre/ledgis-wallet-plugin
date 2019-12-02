@@ -8,13 +8,14 @@ gulp.task('default', () => {
     gulp.start('babel');
 });
 
-gulp.task('babel', () => {
+gulp.task('babel', (done) => {
     gulp.src('src/*.js')
         .pipe(babel({
             presets: ['@babel/preset-env'],
         }))
         .pipe(gulp.dest('dist'));
     console.log("Transpiling complete!");
+    done();
 });
 
 gulp.task('build',()  => {
