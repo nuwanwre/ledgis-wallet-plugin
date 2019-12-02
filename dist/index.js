@@ -300,7 +300,9 @@ function () {
   }, {
     key: "hexEncode",
     value: function hexEncode(payload) {
-      return _lzutf["default"].compress(payload);
+      return _lzutf["default"].compress(payload, {
+        outputEncoding: "Base64"
+      });
     }
     /**
      * Parses a given hex to string
@@ -311,7 +313,10 @@ function () {
   }, {
     key: "hexDecode",
     value: function hexDecode(payload) {
-      var result = _lzutf["default"].decompress(payload);
+      var result = _lzutf["default"].decompress(payload, {
+        inputEncoding: "Base64",
+        outputEncoding: "String"
+      });
 
       return JSON.parse(result);
     }
