@@ -1,4 +1,5 @@
 import uuid from 'uuid';
+import LZUTF8 from 'lzutf8';
 import socketClient from 'socket.io-client';
 /**
  * @classdesc Represents the LEDGIS Wallet Plugin. It allows the client applications to integrate with wallet functionalities
@@ -245,14 +246,7 @@ class Utils {
      * @return {String} Encoded hex string containing the payload
      */
     static hexEncode(payload) {
-        let hex, i;
-        let result = "";
-        for (i = 0; i < payload.length; i++) {
-            hex = payload.charCodeAt(i).toString(16);
-            result += ("000" + hex).slice(-4);
-        }
-
-        return result
+        return LZUTF8.compress(payload)
     }
 
     /**
@@ -261,12 +255,7 @@ class Utils {
      * @return {JSON} JSON payload
      */
     static hexDecode(payload) {
-        let j;
-        let hexes = payload.match(/.{1,4}/g) || [];
-        let result = "";
-        for (j = 0; j < hexes.length; j++) {
-            result += String.fromCharCode(parseInt(hexes[j], 16));
-        }
+        const result = LZUTF8.decompress(payload);
 
         return JSON.parse(result);
     }

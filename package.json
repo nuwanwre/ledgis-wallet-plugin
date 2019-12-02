@@ -15,6 +15,7 @@
   ],
   "private": true,
   "dependencies": {
+    "lzutf8": "^0.5.5",
     "socket.io-client": "2.1.1",
     "uuid": "^3.3.3"
   },

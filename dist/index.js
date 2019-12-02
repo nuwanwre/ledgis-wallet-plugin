@@ -7,6 +7,8 @@ exports["default"] = void 0;
 
 var _uuid = _interopRequireDefault(require("uuid"));
 
+var _lzutf = _interopRequireDefault(require("lzutf8"));
+
 var _socket = _interopRequireDefault(require("socket.io-client"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
@@ -298,15 +300,7 @@ function () {
   }, {
     key: "hexEncode",
     value: function hexEncode(payload) {
-      var hex, i;
-      var result = "";
-
-      for (i = 0; i < payload.length; i++) {
-        hex = payload.charCodeAt(i).toString(16);
-        result += ("000" + hex).slice(-4);
-      }
-
-      return result;
+      return _lzutf["default"].compress(payload);
     }
     /**
      * Parses a given hex to string
@@ -317,13 +311,7 @@ function () {
   }, {
     key: "hexDecode",
     value: function hexDecode(payload) {
-      var j;
-      var hexes = payload.match(/.{1,4}/g) || [];
-      var result = "";
-
-      for (j = 0; j < hexes.length; j++) {
-        result += String.fromCharCode(parseInt(hexes[j], 16));
-      }
+      var result = _lzutf["default"].decompress(payload);
 
       return JSON.parse(result);
     }
