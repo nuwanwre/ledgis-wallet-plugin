@@ -246,7 +246,7 @@ class Utils {
      * @return {String} Encoded hex string containing the payload
      */
     static hexEncode(payload) {
-        return LZUTF8.compress(payload, "Base64")
+        return LZUTF8.compress(payload, {outputEncoding: "Base64"})
     }
 
     /**
@@ -255,7 +255,7 @@ class Utils {
      * @return {JSON} JSON payload
      */
     static hexDecode(payload) {
-        const result = LZUTF8.decompress(payload, "Base64");
+        const result = LZUTF8.decompress(payload, {inputEncoding: "Base64", outputEncoding: "String"});
 
         return JSON.parse(result);
     }
