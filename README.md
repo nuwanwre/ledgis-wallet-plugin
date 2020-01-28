@@ -1,6 +1,6 @@
 # LEDGIS Wallet Plugin for JS based Applications
 
-**Update**: This library is no longer maintained at this repository. It has been moved [here] (https://github.com/ibct-dev/ledgis-wallet-plugin)
+**Update: This library is no longer maintained at this repository. It has been moved [here](https://github.com/ibct-dev/ledgis-wallet-plugin)**
 
 This library is meant to be used together with applications that are planning to integrate LEDGIS Mobile wallet into their respective applications. Target release platforms are JS based Web Apps and Hybrid mobile frameworks such as React Native to seamlessly integrate wallet functions.
 
